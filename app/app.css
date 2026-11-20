@@ -1404,15 +1404,6 @@ html[data-style="neobrutalist"] main a.nb-panel h2 {
 	text-transform: uppercase;
 }
 
-html[data-style="neobrutalist"] main ul > li.nb-line-b > a {
-	transition: box-shadow var(--motion-quick) ease;
-}
-
-html[data-style="neobrutalist"] main ul > li.nb-line-b > a:hover,
-html[data-style="neobrutalist"] main ul > li.nb-line-b > a:focus-visible {
-	box-shadow: inset var(--bw-heavy) 0 0 var(--accent-surface);
-}
-
 html[data-style="neobrutalist"] main a.nb-panel:focus-visible h2 {
 	text-decoration: underline;
 	text-decoration-thickness: 3px;
@@ -1438,12 +1429,15 @@ html[data-style="neobrutalist"] footer.nb-line-t {
 
 html[data-style="neobrutalist"] footer .nb-chip {
 	border-color: var(--page-surface);
+	background-color: transparent;
+	background-image: none;
 	box-shadow: 3px 3px 0 var(--accent-surface);
 }
 
 html[data-style="neobrutalist"] footer .nb-chip:hover {
 	transform: translate(-2px, -2px);
 	border-color: var(--accent-surface);
+	background-color: var(--accent-surface);
 	box-shadow: 5px 5px 0 var(--accent-surface);
 	color: var(--on-accent);
 }
