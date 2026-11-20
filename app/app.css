@@ -2602,83 +2602,108 @@
 }
 
 [data-style="material"] {
-	/* Material You starts from one color and tints everything with it, so the
-	   palette stays untouched while every surface becomes a tone of --mauve.
-	   Depth is Material's soft elevation, never an ink offset, so nothing moves
-	   on press. */
+	/* Material keeps the palette's hues and text tones. Shape and depth come
+	   from the tokens below, and every new color is mixed from a token so a
+	   scheme, accent or custom palette still owns the result. */
 	--bw: 1px;
-	--bw-heavy: 4px;
-	--radius: 24px;
+	--bw-heavy: 3px;
+	--radius: 20px;
 	--control-radius: 999px;
+	--panel-radius: 24px;
+	--well-radius: 16px;
 	--lift: 0px;
 	--press: 0px;
-	--shadow-hard: 0 1px 4px rgb(0 0 0 / 0.37);
-	--shadow-hard-lg: 0 2px 2px rgb(0 0 0 / 0.2), 0 6px 10px rgb(0 0 0 / 0.3);
-	--shadow-hard-sm: 0 1px 2px rgb(0 0 0 / 0.3);
+	--button-weight: 700;
+
+	/* Elevation is a soft shadow, never an ink offset: nothing moves on press. */
+	--shadow-hard: 0 1px 3px light-dark(rgb(0 0 0 / 0.16), rgb(0 0 0 / 0.45));
+	--shadow-hard-lg: 0 6px 16px light-dark(rgb(0 0 0 / 0.14), rgb(0 0 0 / 0.55));
+	--shadow-hard-sm: none;
+	--button-hover-shadow: 0 2px 8px
+		light-dark(rgb(0 0 0 / 0.15), rgb(0 0 0 / 0.45));
+	--button-press-shadow: none;
 	--backdrop: none;
 
-	/* Material's scrollbar is a slim tinted pill, with no visible track. */
-	--scrollbar-size: 14px;
+	/* Three tonal steps: the app bar, the segment track, and a pressed state. */
+	--mat-bar: light-dark(
+		color-mix(in srgb, var(--accent-surface) 3%, #fff),
+		color-mix(in srgb, var(--accent-surface) 3%, var(--base))
+	);
+	--mat-track: light-dark(
+		color-mix(in srgb, var(--accent-surface) 8%, #fff),
+		color-mix(in srgb, var(--accent-surface) 3%, var(--base))
+	);
+	--mat-state: light-dark(
+		color-mix(in srgb, var(--accent-surface) 12%, #fff),
+		color-mix(in srgb, var(--accent-surface) 4%, var(--base))
+	);
+	--mat-line: color-mix(in srgb, var(--ink) 12%, transparent);
+
+	/* A slim tinted pill, with no visible track. */
+	--scrollbar-size: 12px;
 	--scrollbar-radius: 999px;
-	--scrollbar-thumb: color-mix(in srgb, var(--mauve) 45%, var(--surface2));
+	--scrollbar-thumb: color-mix(
+		in srgb,
+		var(--accent-surface) 45%,
+		var(--surface2)
+	);
 	--scrollbar-thumb-line: 4px solid transparent;
 
-	/* Surface roles, low to high: page, container, container-high, well. A
-	   light scheme lightens toward paper, a dark one lifts the base, so a tint
-	   never lands between the text and its background. The tint stays shallow
-	   because a palette's muted ink sits close to its AAA floor: a few points of
-	   accent over the base costs more than a point of contrast. */
+	/* Page, container and control surfaces: shallow tints, never a repaint of
+	   a palette token. The muted tones lean back toward --text so the tint
+	   cannot cost a scheme its AAA floor. */
 	--page-surface: light-dark(
-		color-mix(in srgb, var(--mauve) 3%, #fff),
-		color-mix(in srgb, var(--mauve) 3%, var(--base))
+		color-mix(in srgb, var(--accent-surface) 3%, #fff),
+		color-mix(in srgb, var(--accent-surface) 3%, var(--base))
 	);
 	--panel-surface: light-dark(
-		color-mix(in srgb, var(--mauve) 5%, #fff),
-		color-mix(in srgb, var(--mauve) 4%, var(--base))
+		color-mix(in srgb, var(--accent-surface) 4%, #fff),
+		color-mix(in srgb, var(--accent-surface) 4%, var(--base))
 	);
 	--plain-surface: light-dark(
-		color-mix(in srgb, var(--mauve) 8%, #fff),
-		color-mix(in srgb, var(--mauve) 4%, var(--base))
+		color-mix(in srgb, var(--accent-surface) 5%, #fff),
+		color-mix(in srgb, var(--accent-surface) 4%, var(--base))
 	);
 	--well-surface: var(--mantle);
-	--accent-surface: var(--mauve);
 
 	/* A tint sits between the palette and the base it was chosen against, so
-	   every muted tone leans toward --text. The palette blocks keep the raw
-	   values in `-base`, which keeps a scoped preview resolving its own. */
-	--subtext1: color-mix(in srgb, var(--subtext1-base) 60%, var(--text));
-	--subtext0: color-mix(in srgb, var(--subtext0-base) 60%, var(--text));
-	--overlay2: color-mix(in srgb, var(--overlay2-base) 60%, var(--text));
-	--overlay1: color-mix(in srgb, var(--overlay1-base) 60%, var(--text));
+	   every muted tone leans toward --text, then toward the polarity pole. The
+	   lift is split into two color mixes so a scoped palette preview resolves
+	   its own pole. */
+	--mat-pole: light-dark(#000, #fff);
+	--mat-ink-lift: color-mix(in srgb, var(--text) 80%, var(--mat-pole));
+	--subtext1: color-mix(in srgb, var(--subtext1-base) 50%, var(--mat-ink-lift));
+	--subtext0: color-mix(in srgb, var(--subtext0-base) 50%, var(--mat-ink-lift));
+	--overlay2: color-mix(in srgb, var(--overlay2-base) 50%, var(--mat-ink-lift));
+	--overlay1: color-mix(in srgb, var(--overlay1-base) 50%, var(--mat-ink-lift));
 
-	/* Quiet rules, a control edge that still reads, and the ink state layer
-	   Material uses for hover and press. */
-	--edge: color-mix(in srgb, var(--ink) 14%, transparent);
-	--control-edge: color-mix(in srgb, var(--ink) 50%, transparent);
-	--button-edge: var(--bw) var(--line-style) var(--control-edge);
-	--hover-edge: color-mix(in srgb, var(--mauve) 70%, transparent);
+	/* Cards carry a hairline and one shadow. Controls are filled, not outlined. */
+	--edge: var(--mat-line);
+	--control-edge: color-mix(in srgb, var(--ink) 22%, transparent);
+	--panel-edge: 1px solid var(--mat-line);
+	--panel-top-edge: var(--panel-edge);
+	--well-edge: 1px solid transparent;
+	--button-edge: 1px solid transparent;
+	--hover-edge: color-mix(in srgb, var(--accent-surface) 45%, transparent);
 	--hover-fill: light-dark(
-		color-mix(in srgb, #fff 8%, var(--plain-surface)),
-		color-mix(in srgb, #000 8%, var(--plain-surface))
+		color-mix(in srgb, var(--accent-surface) 8%, #fff),
+		color-mix(in srgb, var(--accent-surface) 4%, var(--base))
 	);
-	--press-fill: light-dark(
-		color-mix(in srgb, #fff 14%, var(--plain-surface)),
-		color-mix(in srgb, #000 14%, var(--plain-surface))
-	);
+	--press-fill: var(--mat-state);
 	--card-hover-fill: light-dark(
-		color-mix(in srgb, #fff 6%, var(--panel-surface)),
-		color-mix(in srgb, #000 6%, var(--panel-surface))
+		color-mix(in srgb, var(--accent-surface) 6%, #fff),
+		color-mix(in srgb, var(--accent-surface) 4%, var(--base))
 	);
-	--accent-hover-fill: color-mix(
-		in srgb,
-		var(--ink) 10%,
-		var(--accent-surface)
-	);
+	--accent-hover-fill: color-mix(in srgb, var(--ink) 8%, var(--accent-surface));
 	--accent-press-fill: color-mix(
 		in srgb,
-		var(--ink) 16%,
+		var(--ink) 14%,
 		var(--accent-surface)
 	);
+	/* A filled field with an accent baseline, the way a Material text field
+	   reads before and after focus. */
+	--input-shadow: inset 0 -2px 0
+		color-mix(in srgb, var(--accent-surface) 60%, transparent);
 }
 
 /* Controls read their own radius, so a style can make them pills while panels
@@ -2695,85 +2720,406 @@
 	border-color: var(--edge);
 }
 
-/* --- Material, past the tokens -------------------------------------------
+/* --- Material, past the tokens ---------------------------------------------
 
-   Material You is behavior too: a tinted app bar and footer, the current
-   destination in a pill, filled chips whose labels stay on-surface, cards that
-   rise one elevation level on hover, and calmer type. These rules key on the
-   page's data-style, so they name page chrome only; a nested preview keeps its
-   own tokens and shape. */
-
-[data-style="material"] header.sticky {
-	border-radius: 0;
-	background-color: light-dark(
-		color-mix(in srgb, var(--mauve) 4%, #fff),
-		color-mix(in srgb, var(--mauve) 4%, var(--base))
-	);
+   A nested preview carries its own data-style. The :not() suffix keeps these
+   rules from painting a different style's preview while a Material page is
+   active, and lets a Material preview keep its own look on any page. */
+[data-style="material"]
+:where(.nb-panel, .nb-button, .nb-chip, .nb-input):not(
+	[data-style="material"] [data-style]:not([data-style="material"]) *
+) {
+	border-color: transparent;
 }
 
-[data-style="material"] footer {
-	background-color: light-dark(
-		color-mix(in srgb, var(--mauve) 3%, #fff),
-		color-mix(in srgb, var(--mauve) 3%, var(--base))
-	);
+[data-style="material"]
+	.nb-panel:not(
+		[data-style="material"] [data-style]:not([data-style="material"]) *
+	) {
+	border-radius: var(--panel-radius);
 }
 
+[data-style="material"]
+	.nb-button:not(
+		[data-style="material"] [data-style]:not([data-style="material"]) *
+	) {
+	padding-inline: 1.1rem;
+	transition:
+		background-color var(--motion-hover) ease,
+		color var(--motion-hover) ease,
+		box-shadow var(--motion-hover) ease;
+}
+
+[data-style="material"]
+	.nb-chip:not(
+		[data-style="material"] [data-style]:not([data-style="material"]) *
+	) {
+	padding: 0.3rem 0.7rem;
+	font-size: 0.6875rem;
+	letter-spacing: 0.05em;
+	transition:
+		background-color var(--motion-hover) ease,
+		color var(--motion-hover) ease;
+}
+
+/* A chip's fill is a tone, so its label stays on-surface to keep AAA. A Tailwind
+   hover fill would swap the label onto the full accent and break that. */
+[data-style="material"]
+.nb-chip:not(.nb-accent):not(.bg-accent):not(
+	[data-style="material"] [data-style]:not([data-style="material"]) *
+) {
+	color: var(--text);
+}
+
+[data-style="material"]
+	:is(a, button).nb-chip:hover:not(.nb-accent):not(
+		[data-style="material"] [data-style]:not([data-style="material"]) *
+	) {
+	background-color: var(--hover-fill);
+	color: var(--text);
+}
+
+/* The app bar is one tonal plane, with the reading bar as its baseline. */
+html[data-style="material"] header.site-header {
+	background-color: var(--mat-bar);
+}
+
+html[data-style="material"] header.site-header > div:first-child {
+	height: auto;
+	min-height: 3.5rem;
+	padding-inline: 1rem;
+	gap: 0.75rem;
+}
+
+@media (min-width: 40rem) {
+	html[data-style="material"] header.site-header > div:first-child {
+		height: 4rem;
+		padding-inline: 1.5rem;
+		gap: 1.5rem;
+	}
+}
+
+html[data-style="material"]
+	header.site-header
+	> div:first-child
+	> a:first-child {
+	border-radius: 999px;
+	padding: 0.3rem 0.55rem 0.3rem 0.3rem;
+	background-color: var(--mat-track);
+}
+
+html[data-style="material"] header.site-header img {
+	border-radius: 999px;
+	border-color: transparent;
+}
+
+html[data-style="material"] header.site-header .nb-button {
+	background-color: var(--mat-track);
+}
+
+html[data-style="material"] header.site-header > .relative {
+	height: 2px;
+	background: var(--mat-track);
+}
+
+html[data-style="material"] header.site-header > .relative .bg-accent {
+	background-color: var(--accent-surface);
+}
+
+/* Four segments in one track. The current page is the only filled segment,
+   so the bar reads as navigation rather than a row of underlined links. */
 [data-style="material"] nav[aria-label="Primary"] {
-	gap: 0.3rem;
+	gap: 2px;
+	padding: 4px;
+	border-radius: 999px;
+	background-color: var(--mat-track);
+	box-shadow: inset 0 0 0 1px var(--mat-line);
 }
 
 [data-style="material"] nav[aria-label="Primary"] a {
 	border-radius: 999px;
-	padding: 0.45rem 0.9rem;
+	padding: 0.4rem 0.75rem;
+	font-size: 0.6875rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
 	text-decoration: none;
+	text-transform: uppercase;
+	color: var(--subtext0);
+	transition:
+		background-color var(--motion-hover) ease,
+		color var(--motion-hover) ease;
+}
+
+[data-style="material"] nav[aria-label="Primary"] a::after {
+	content: none;
 }
 
 [data-style="material"] nav[aria-label="Primary"] a:hover {
-	background-color: light-dark(rgb(255 255 255 / 0.07), rgb(0 0 0 / 0.07));
+	background-color: var(--mat-state);
+	color: var(--text);
 }
 
 [data-style="material"] nav[aria-label="Primary"] a[aria-current="page"] {
-	background-color: color-mix(in srgb, var(--mauve) 5%, var(--base));
-	color: var(--text);
+	background-color: var(--accent-surface);
+	box-shadow: var(--shadow-hard-sm);
+	color: var(--on-accent);
 }
 
 /* Four pills have to fit a 320px phone, so they tighten before they wrap. */
 @media (max-width: 39.99rem) {
 	[data-style="material"] nav[aria-label="Primary"] a {
-		padding-inline: 0.6rem;
+		padding-inline: 0.5rem;
+		letter-spacing: 0.04em;
 	}
 }
 
-/* A chip's fill is a tone, so its label stays on-surface to keep AAA. The hover
-   fill is a tone too: a chip never swaps to a full accent under that label. */
-[data-style="material"] .nb-chip:not(.nb-accent):not(.bg-accent) {
-	color: var(--text);
+/* Every masthead becomes one elevated container, with a short accent rail in
+   place of the shared border. The rail sits outside the text measure. */
+[data-style="material"] .page-window {
+	position: relative;
+	isolation: isolate;
+	padding: 1.75rem 1.5rem 2rem;
+	border: 0;
+	border-radius: var(--panel-radius);
+	background-color: var(--panel-surface);
+	box-shadow: var(--shadow-hard);
 }
 
-[data-style="material"] .nb-chip:not(.nb-accent):not(.bg-accent):hover {
+@media (max-width: 39.99rem) {
+	[data-style="material"] .page-window {
+		padding: 1.4rem 1.1rem 1.6rem;
+	}
+}
+
+[data-style="material"] .page-window::before {
+	content: "";
+	position: absolute;
+	inset: 0 0 auto;
+	height: 4px;
+	border-radius: var(--panel-radius) var(--panel-radius) 0 0;
+	background: linear-gradient(
+		90deg,
+		var(--accent-surface),
+		color-mix(in srgb, var(--accent-surface) 25%, transparent)
+	);
+	pointer-events: none;
+}
+
+[data-style="material"] .page-window > div:first-child {
+	margin-bottom: 1.5rem;
+}
+
+/* A calmer type scale: fewer extremes, one weight for each role. */
+[data-style="material"] .text-display {
+	font-size: clamp(2.5rem, 6vw, 4.25rem);
+	font-weight: 700;
+	line-height: 1.02;
+	letter-spacing: -0.035em;
+}
+
+[data-style="material"] .text-page-title {
+	font-size: clamp(1.875rem, 3.5vw, 2.5rem);
+	font-weight: 700;
+	line-height: 1.1;
+	letter-spacing: -0.025em;
+}
+
+[data-style="material"] .text-lead {
+	font-size: clamp(1rem, 1.1vw + 0.7rem, 1.125rem);
+	line-height: 1.6;
+}
+
+[data-style="material"] .text-label {
+	font-weight: 600;
+	letter-spacing: 0.08em;
+}
+
+html[data-style="material"] section .nb-line-b.text-label {
+	border-bottom-color: transparent;
+	padding-bottom: 0;
+}
+
+/* Home: a filled primary action, two quiet ones, and list rows that read as
+   tappable surfaces instead of underlined blog links. */
+html[data-style="material"] .page-window .hero-step-4 {
+	gap: 0.6rem;
+}
+
+html[data-style="material"] section ul > li.nb-line-b a.group {
+	border-radius: 14px;
+	padding: 0.75rem 0.85rem;
+	transition: background-color var(--motion-hover) ease;
+}
+
+html[data-style="material"] section ul > li.nb-line-b a.group:hover {
 	background-color: var(--hover-fill);
 }
 
+html[data-style="material"]
+	section
+	ul
+	> li.nb-line-b
+	a.group
+	> span:first-child
+	> span:first-child {
+	margin: 0;
+	padding: 0;
+	background-color: transparent;
+	color: var(--text);
+}
+
+html[data-style="material"] section.nb-panel.p-5 ul li a {
+	border-bottom-color: transparent;
+	border-radius: 12px;
+	padding: 0.6rem 0.7rem;
+	transition: background-color var(--motion-hover) ease;
+}
+
+html[data-style="material"] section.nb-panel.p-5 ul li a:hover {
+	background-color: var(--hover-fill);
+}
+
+/* Blog filter bar: one field, one sort control, one row of tonal chips. */
+html[data-style="material"] .search-field.nb-input {
+	border-radius: 999px;
+	padding: 0.6rem 1rem;
+	background-color: var(--mat-track);
+	box-shadow: none;
+}
+
+html[data-style="material"] .search-field + div button {
+	border: 0;
+	border-radius: 999px;
+	padding: 0.45rem 0.8rem;
+	background-color: var(--mat-track);
+	font-size: 0.6875rem;
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	transition: background-color var(--motion-hover) ease;
+}
+
+html[data-style="material"] .search-field + div button:hover {
+	background-color: var(--mat-state);
+}
+
+html[data-style="material"] ul > li > a.nb-panel h2 {
+	font-size: 1.125rem;
+	font-weight: 700;
+	line-height: 1.25;
+	letter-spacing: -0.015em;
+}
+
+/* Reading view: section numbers become pills, and the active contents entry
+   becomes a tonal segment so the rail matches the app bar. */
+
+/* Keep prose on the page tone even when an ancestor is painted in a hover
+   state, so scanner and browser both read the same opaque backdrop. */
+html[data-style="material"] .prose-dbm {
+	background-color: var(--page-surface);
+}
+
+html[data-style="material"] .prose-dbm h2 {
+	margin-top: 3.25em;
+	padding-top: 1em;
+	font-size: clamp(1.375rem, 2vw + 0.5rem, 1.625rem);
+}
+
+html[data-style="material"] .prose-dbm h2::before {
+	display: flex;
+	width: max-content;
+	margin-bottom: 0.7em;
+	padding: 0.2rem 0.6rem;
+	border-radius: 999px;
+	background-color: var(--mat-track);
+	color: var(--text);
+	font-size: 0.6875rem;
+	letter-spacing: 0.08em;
+}
+
+html[data-style="material"]
+	nav[aria-label="On this page"]
+	a[aria-current="true"] {
+	border-radius: 999px;
+	padding-left: 0.75rem;
+	background-color: var(--mat-track);
+	color: var(--text);
+	text-decoration: none;
+}
+
+html[data-style="material"] .prose-dbm .code-block {
+	border-color: transparent;
+	border-radius: var(--radius);
+}
+
+html[data-style="material"] .prose-dbm .code-block__bar {
+	padding: 0.6rem 0.9rem;
+}
+
+html[data-style="material"] .prose-dbm img {
+	border-color: transparent;
+	border-radius: 16px;
+}
+
+/* Projects: the pointer sheen is allowed on this one surface, and the icon
+   tile is a smaller rounded square inside the elevated card. */
+html[data-style="material"] .nb-spot::after {
+	display: block;
+	--spot-color: color-mix(in srgb, var(--accent-surface) 6%, transparent);
+}
+
+html[data-style="material"] a.nb-panel.nb-spot h2 {
+	font-size: 1.25rem;
+	font-weight: 700;
+	letter-spacing: -0.02em;
+}
+
+html[data-style="material"] a.nb-panel.nb-spot .nb-line.nb-fill {
+	border-color: transparent;
+	border-radius: 14px;
+}
+
+/* Disclosure bullets become short accented rules rather than square dots. */
+html[data-style="material"] section li > span.bg-accent[aria-hidden="true"] {
+	width: 1.25rem;
+	height: 0.25rem;
+	margin-top: 0.65em;
+	border-radius: 999px;
+}
+
+/* Selection keeps the existing outline and gains a quiet accent rail. */
+html[data-style="material"] button.nb-panel[aria-pressed="true"] {
+	box-shadow:
+		inset 4px 0 0 var(--accent-surface),
+		var(--shadow-hard);
+}
+
+html[data-style="material"] footer.nb-line-t {
+	background-color: var(--mat-bar);
+	border-top-color: transparent;
+}
+
+html[data-style="material"] footer.nb-line-t > div {
+	padding-block: 2rem;
+}
+
+html[data-style="material"] footer.nb-line-t .text-label {
+	letter-spacing: 0.08em;
+}
+
 /* A tonal field costs the palette's own text more than a point of contrast, so
-   the hint leans to the polarity pole, the way accent text below does. The
-   wrapper and the field itself can be the same element here, so both are
-   named. */
+   the hint leans to the polarity pole, the way accent text below does. */
 [data-style="material"] .nb-input::placeholder,
 [data-style="material"] .nb-input :is(input, textarea)::placeholder {
 	color: light-dark(#000, #fff);
 }
 
-/* Accent text also sits on the tint, and a shallow tint on a dark scheme costs
-   more than the accent's whole AAA headroom. The palette's own dim ink is no
-   floor to lean on either: the tight palettes put their text on the same edge.
-   Lean the accent toward the polarity pole instead, white on a dark scheme and
-   black on a light one, which only ever adds contrast. Fills keep the
-   palette's own accent. */
+/* Accent text sits on a tinted surface. Mixing toward the polarity pole can
+   only add contrast, and follows the accent the visitor actually picked. */
 [data-style="material"] .text-accent {
-	color: color-mix(in srgb, var(--mauve) 65%, light-dark(#000, #fff));
+	color: color-mix(in srgb, var(--accent-surface) 30%, light-dark(#000, #fff));
 }
 
-/* The two palette accents the content uses as text get the same lift. */
 [data-style="material"] .text-red {
 	color: color-mix(in srgb, var(--red) 75%, light-dark(#000, #fff));
 }
@@ -2782,25 +3128,12 @@
 	color: color-mix(in srgb, var(--green) 75%, light-dark(#000, #fff));
 }
 
-/* The bullets and markers are accent text too; keep them above AAA on the
-   tinted page. */
 [data-style="material"] .prose-dbm ul > li::before,
 [data-style="material"] .prose-dbm ol > li::marker {
-	color: color-mix(in srgb, var(--mauve) 65%, light-dark(#000, #fff));
+	color: color-mix(in srgb, var(--accent-surface) 30%, light-dark(#000, #fff));
 }
 
-[data-style="material"] .text-display,
-[data-style="material"] .text-page-title {
-	font-weight: 700;
-	letter-spacing: -0.015em;
-}
-
-[data-style="material"] .text-label {
-	font-weight: 600;
-	letter-spacing: 0.08em;
-}
-
-[data-style="material"] :focus-visible {
+[data-style="material"] :focus-visible:not(:where(#main-content)) {
 	outline: 3px solid var(--focus-ring);
 	outline-offset: 2px;
 }
@@ -2809,7 +3142,6 @@
 	outline-width: 3px;
 	outline-offset: 2px;
 }
-
 /* --- MS-DOS ---------------------------------------------------------------
 
    A text-mode skin, not a new palette. Monospace type, square corners,
