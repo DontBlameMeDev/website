@@ -2645,7 +2645,7 @@
 
 [data-style="msdos"] p.text-label::before {
 	content: "> " / "";
-	color: color-mix(in srgb, var(--accent-surface) 65%, var(--text));
+	color: var(--text);
 }
 
 /* A card's first row becomes its title bar, using only existing content. */
@@ -2668,6 +2668,15 @@
 	.nb-panel
 	> :first-child:where(:not([data-style]):not(.nb-line))
 	h2:not(:where([data-style]:not([data-style="msdos"]) *)) {
+	color: var(--text);
+}
+
+[data-style="msdos"]
+	.nb-panel
+	> :first-child:where(:not([data-style]):not(.nb-line))
+	> :where(p, span, time):not(.nb-chip):not(
+		:where([data-style]:not([data-style="msdos"]) *)
+	) {
 	color: var(--text);
 }
 
@@ -2874,7 +2883,7 @@
 	content: ">" / "";
 	font-size: 0.7em;
 	line-height: 2.3;
-	color: color-mix(in srgb, var(--accent-surface) 65%, var(--text));
+	color: var(--text);
 }
 
 [data-style="msdos"] .prose-dbm h2::before {
@@ -2883,7 +2892,7 @@
 	background: transparent;
 	padding: 0;
 	box-shadow: none;
-	color: color-mix(in srgb, var(--accent-surface) 65%, var(--text));
+	color: var(--text);
 	font-size: 0.8125rem;
 }
 
