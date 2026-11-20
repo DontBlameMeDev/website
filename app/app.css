@@ -2674,7 +2674,7 @@
 [data-style="msdos"]
 	.nb-panel
 	> :first-child:where(:not([data-style]):not(.nb-line))
-	> :where(p, span, time):not(.nb-chip):not(
+	> :where(p, span, time, a):not(.nb-chip):not(
 		:where([data-style]:not([data-style="msdos"]) *)
 	) {
 	color: var(--text);
