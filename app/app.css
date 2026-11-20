@@ -1399,8 +1399,8 @@
 	--bw-heavy: 3px;
 	--radius: 3px;
 	--line-style: solid;
-	--lift: 0px;
-	--press: 0px;
+	--lift: -1px;
+	--press: 1px;
 
 	--font-sans: Tahoma, "Segoe UI", Verdana, sans-serif;
 
@@ -1439,6 +1439,21 @@
 	--xp-btn-face: linear-gradient(180deg, #fcfcfb 0%, #f3f3ef 45%, #ecebe6 100%);
 	--xp-btn-hot: inset 0 0 0 1px #fff, 0 0 0 2px #fdd98c, 0 0 0 3px #e59700;
 
+	--xp-selected: linear-gradient(
+		180deg,
+		color-mix(in srgb, var(--xp-frame-dark) 15%, var(--xp-select)) 0%,
+		var(--xp-select) 45%,
+		color-mix(in srgb, var(--xp-frame-dark) 45%, var(--xp-select)) 100%
+	);
+	--xp-raised:
+		inset 1px 1px 0 color-mix(in srgb, var(--xp-title-ink) 65%, transparent),
+		inset -1px -1px 0 color-mix(in srgb, var(--xp-frame-dark) 55%, transparent);
+	--xp-recessed:
+		inset 1px 1px 2px color-mix(in srgb, var(--xp-frame-dark) 60%, transparent),
+		inset -1px -1px 0 color-mix(in srgb, var(--xp-title-ink) 45%, transparent);
+
+	--xp-success-ink: #0b4d0b;
+
 	/* Window and dialog body: the palette keeps the text legible, the frame
 	   and bevels are fixed Luna. */
 	--edge: var(--xp-field);
@@ -1450,6 +1465,8 @@
 	--panel-radius: 8px 8px 3px 3px;
 	--well-edge: 3px solid var(--xp-frame);
 	--well-radius: 8px 8px 3px 3px;
+
+	--shadow-well: var(--xp-recessed);
 	/* A field is inset, and on a dark palette a raised fill would put the ink
 	   under AAA: the light side keeps the palette's own step, the dark side
 	   sinks toward the crust the way an XP field sits below its window. */
@@ -1465,7 +1482,7 @@
 	--button-weight: 400;
 	--accent-image: none;
 	--xp-link: #0a3aa5;
-	--input-shadow: inset 1px 1px 2px rgb(0 0 0 / 0.15);
+	--input-shadow: var(--xp-recessed);
 	--hover-edge: var(--xp-border);
 	--hover-fill: var(--xp-silver);
 	--press-fill: #d1ccc1;
@@ -1486,7 +1503,7 @@
 	   labels take the next step up. */
 	--overlay1: var(--subtext0);
 
-	--shadow-hard-sm: inset 0 0 0 1px #fff;
+	--shadow-hard-sm: var(--xp-raised);
 	--backdrop: none;
 
 	/* Luna chrome: a beveled thumb in a sunken track, with arrow buttons. */
@@ -1513,7 +1530,14 @@
 
 [data-style="xp"] body {
 	background-color: #3a6ea5;
+	font-size: 0.875rem;
+	line-height: 1.6;
 	background-image:
+		repeating-linear-gradient(
+			90deg,
+			color-mix(in srgb, var(--xp-frame-dark) 4%, transparent) 0 1px,
+			transparent 1px 4px
+		),
 		radial-gradient(
 			ellipse at 50% 120%,
 			#7ab35a 0%,
@@ -1534,15 +1558,23 @@
 	border: 3px solid var(--xp-frame);
 	border-top: 0;
 	border-radius: 0 0 3px 3px;
-	box-shadow: 0 12px 34px rgb(0 0 0 / 0.38);
+	box-shadow:
+		inset 1px 0 0 color-mix(in srgb, var(--xp-title-ink) 22%, transparent),
+		inset -1px 0 0 color-mix(in srgb, var(--xp-frame-dark) 35%, transparent),
+		0 12px 34px rgb(0 0 0 / 0.38);
 }
-
 /* The sticky header is the title bar. */
 [data-style="xp"] header.nb-chrome {
 	max-width: 1180px;
 	margin-inline: auto;
 	background-color: #004bd6;
-	background-image: var(--xp-title);
+	background-image:
+		repeating-linear-gradient(
+			90deg,
+			color-mix(in srgb, var(--xp-frame-dark) 25%, transparent) 0 1px,
+			transparent 1px 6px
+		),
+		var(--xp-title);
 	border: 3px solid var(--xp-frame);
 	border-bottom: 0;
 	border-radius: var(--xp-title-radius) var(--xp-title-radius) 0 0;
@@ -1597,19 +1629,68 @@
 
 [data-style="xp"] header.nb-chrome nav a:hover {
 	color: var(--xp-title-ink);
-	/* A state layer has to move away from the ink: white over the title blue
-	   costs a point of contrast, and the labels sit on the floor already. */
-	background-color: rgb(0 0 0 / 0.2);
+	border-color: color-mix(in srgb, var(--xp-title-ink) 55%, transparent);
+	background-image: var(--xp-selected);
+	background-color: var(--xp-select);
+	box-shadow: var(--xp-raised);
 }
 
 [data-style="xp"] header.nb-chrome nav a[aria-current="page"] {
 	color: var(--xp-title-ink);
-	text-decoration-color: rgb(255 255 255 / 0.7);
+	border-color: color-mix(in srgb, var(--xp-title-ink) 65%, transparent);
+	background-image: var(--xp-selected);
+	background-color: var(--xp-select);
+	box-shadow: var(--xp-raised);
+	text-decoration: none;
+}
+
+[data-style="xp"] header.nb-chrome > div > a:first-child {
+	border: 1px solid color-mix(in srgb, var(--xp-title-ink) 40%, transparent);
+	border-radius: 3px;
+	background-color: color-mix(in srgb, var(--xp-frame-dark) 45%, transparent);
+	box-shadow: var(--xp-raised);
+	padding: 3px 6px;
+	white-space: nowrap;
+	transition: background-color var(--motion-quick) steps(2, end);
+}
+
+[data-style="xp"] header.nb-chrome > div > a:first-child:hover {
+	background-color: color-mix(
+		in srgb,
+		var(--xp-select) 55%,
+		var(--xp-frame-dark)
+	);
+}
+
+[data-style="xp"] header.nb-chrome nav[aria-label="Primary"] {
+	gap: 2px;
+	padding: 2px;
+	border: 1px solid color-mix(in srgb, var(--xp-frame-dark) 70%, transparent);
+	border-radius: 3px;
+	background-color: color-mix(in srgb, var(--xp-frame-dark) 28%, transparent);
+	box-shadow: inset 1px 1px 2px
+		color-mix(in srgb, var(--xp-frame-dark) 60%, transparent);
+}
+
+[data-style="xp"] header.nb-chrome nav a {
+	border: 1px solid transparent;
+	border-radius: 2px;
+	padding: 2px 6px;
+	line-height: 1.4;
+	transition:
+		background-color var(--motion-quick) steps(2, end),
+		border-color var(--motion-quick) steps(2, end);
 }
 
 /* The reading bar rides the title bar's bottom edge. */
-[data-style="xp"] header.nb-chrome .bg-mauve {
+[data-style="xp"] header.nb-chrome > .relative {
+	height: var(--bw-heavy);
+	background-color: var(--xp-field);
+}
+
+[data-style="xp"] header.nb-chrome > .relative .bg-accent {
 	background-color: #7ab8ff;
+	background-image: linear-gradient(90deg, var(--xp-frame-light), #7ab8ff);
 }
 
 /* A page masthead is a window with its own title bar. */
@@ -1622,11 +1703,22 @@
 }
 
 [data-style="xp"] .page-window > div:first-child {
+	position: relative;
 	align-items: center;
-	min-height: 26px;
-	padding: 3px 6px;
+	min-height: 30px;
+	padding: 4px 8px;
 	border-radius: 6px 6px 0 0;
-	background-image: var(--xp-title);
+	background-color: var(--xp-select);
+	background-image:
+		repeating-linear-gradient(
+			90deg,
+			color-mix(in srgb, var(--xp-frame-dark) 25%, transparent) 0 1px,
+			transparent 1px 6px
+		),
+		var(--xp-title);
+	box-shadow:
+		inset 0 1px 0 color-mix(in srgb, var(--xp-title-ink) 35%, transparent),
+		inset 0 -1px 0 color-mix(in srgb, var(--xp-frame-dark) 75%, transparent);
 	color: var(--xp-title-ink);
 	font-family: "Trebuchet MS", Tahoma, sans-serif;
 	text-shadow: var(--xp-title-shadow);
@@ -1661,6 +1753,30 @@
 
 [data-style="xp"] .page-window > div:first-child time {
 	color: var(--xp-title-ink);
+}
+
+[data-style="xp"] .nb-panel {
+	position: relative;
+}
+
+[data-style="xp"] .nb-panel::before {
+	content: "";
+	position: absolute;
+	inset: 0 0 auto;
+	height: 5px;
+	border-radius: 6px 6px 0 0;
+	background-image:
+		repeating-linear-gradient(
+			90deg,
+			color-mix(in srgb, var(--xp-frame-dark) 25%, transparent) 0 1px,
+			transparent 1px 5px
+		),
+		linear-gradient(90deg, var(--xp-frame) 0 36%, var(--xp-select) 36% 100%);
+	pointer-events: none;
+}
+
+[data-style="xp"] .nb-well {
+	box-shadow: var(--xp-recessed);
 }
 
 /* Minimize, restore and close, as the title bar draws them. */
@@ -1732,10 +1848,14 @@
 
 /* The footer is the taskbar. */
 [data-style="xp"] footer.nb-line-t {
-	margin-top: 3.5rem;
+	margin-top: 0;
 	border-top: 1px solid #0755c5;
 	background-color: #2053b5;
 	background-image: var(--xp-taskbar);
+
+	box-shadow:
+		inset 0 1px 0 color-mix(in srgb, var(--xp-title-ink) 30%, transparent),
+		inset 0 2px 0 color-mix(in srgb, var(--xp-frame-light) 35%, transparent);
 	color: #fff;
 }
 
@@ -1752,7 +1872,7 @@
 	background-color: #1a4a9c;
 	background-image: linear-gradient(180deg, #2657a3, #1a4a9c);
 	color: #fff;
-	box-shadow: inset 0 0 0 1px #5a8fe0;
+	box-shadow: var(--xp-raised);
 }
 
 [data-style="xp"] footer .nb-chip.nb-chip:hover {
@@ -1780,12 +1900,19 @@
 	border-radius: 2px;
 	background-color: #fff;
 	background-image: none;
-	box-shadow: inset 1px 1px 2px rgb(0 0 0 / 0.15);
+	box-shadow: var(--xp-recessed);
 	color: #000;
 }
 
 [data-style="xp"] .nb-input :is(input, textarea) {
 	color: #000;
+}
+
+[data-style="xp"] .nb-input:focus-within {
+	border-color: var(--xp-border);
+	box-shadow:
+		var(--xp-recessed),
+		0 0 0 2px color-mix(in srgb, var(--xp-frame-light) 45%, transparent);
 }
 
 /* The field wrapper and the field itself can be the same element here, so the
@@ -1829,16 +1956,34 @@
 	text-decoration-color: var(--xp-link);
 }
 
+[data-style="xp"] .prose-dbm .code-block {
+	border-color: var(--xp-field);
+	box-shadow: var(--xp-recessed);
+}
+
 [data-style="xp"] .prose-dbm .code-block__bar {
-	border-bottom: 1px solid var(--xp-field);
-	background-color: var(--xp-silver);
-	background-image: linear-gradient(180deg, #f9f9f5, #e3e0d5);
-	color: #222;
+	border-bottom-color: var(--xp-frame-dark);
+	background-color: var(--xp-select);
+	background-image:
+		repeating-linear-gradient(
+			90deg,
+			color-mix(in srgb, var(--xp-frame-dark) 25%, transparent) 0 1px,
+			transparent 1px 6px
+		),
+		linear-gradient(90deg, var(--xp-frame), var(--xp-select));
+	color: var(--xp-title-ink);
+}
+
+[data-style="xp"] .prose-dbm .code-block__bar > span:not(.sr-only) {
+	color: var(--xp-title-ink);
 }
 
 [data-style="xp"] .prose-dbm .code-block__copy {
 	border-color: var(--xp-field);
-	color: #333;
+	background-color: var(--xp-silver);
+	background-image: var(--xp-btn-face);
+	box-shadow: var(--xp-raised);
+	color: #222;
 }
 
 [data-style="xp"] .prose-dbm .code-block__copy:hover {
@@ -1847,9 +1992,10 @@
 	color: #000;
 }
 
-[data-style="xp"] .prose-dbm .code-block__copy[data-copied] {
-	border-color: #1a6b1a;
-	color: #1a6b1a;
+[data-style="xp"] .prose-dbm .code-block__copy[data-copied],
+[data-style="xp"] .prose-dbm .code-block__copy[data-copied]:hover {
+	border-color: var(--xp-success-ink);
+	color: var(--xp-success-ink);
 }
 
 [data-style="xp"] ::selection {
@@ -1866,6 +2012,39 @@
 	color: #000;
 }
 
+[data-style="xp"] [aria-label="On this page"] a[aria-current="true"] {
+	background-color: color-mix(
+		in srgb,
+		var(--xp-frame-dark) 15%,
+		var(--xp-select)
+	);
+	background-image: var(--xp-selected);
+	box-shadow: var(--xp-raised);
+	color: var(--xp-title-ink);
+	text-decoration: none;
+}
+
+[data-style="xp"] :is(.nb-line-b > a.group, a.nb-panel.nb-lift):hover {
+	background-color: var(--xp-select);
+	background-image: none;
+}
+
+[data-style="xp"]
+	:is(.nb-line-b > a.group, a.nb-panel.nb-lift):hover
+	:is(
+		.text-text,
+		.text-subtext0,
+		.text-subtext1,
+		.text-meta,
+		.text-label,
+		h2,
+		h3,
+		time,
+		svg
+	):not(.nb-chip) {
+	color: var(--xp-title-ink);
+}
+
 /* The skip link carries its own fill, so it cannot use the palette ink. */
 [data-style="xp"] a[href="#main-content"]:focus {
 	background-color: var(--xp-select);
@@ -1874,14 +2053,160 @@
 
 /* The era's dotted focus rectangle, kept on the page ink where it can show. */
 [data-style="xp"] :focus-visible {
-	outline: 1px dotted var(--focus-ring);
+	outline: 2px dotted currentColor;
 	outline-offset: 2px;
 }
 
-[data-style="xp"] :where(header.nb-chrome) :focus-visible {
-	outline-color: #fff;
+[data-style="xp"] .search-field:has(input:focus-visible) {
+	outline-color: currentColor;
 }
 
+[data-style="xp"] :is(h1, h2, h3, h4, h5) {
+	font-family: "Trebuchet MS", Tahoma, sans-serif;
+	letter-spacing: -0.01em;
+}
+
+[data-style="xp"] .text-display {
+	font-size: clamp(2.25rem, 5vw, 3.75rem);
+	font-weight: 700;
+	line-height: 1;
+	letter-spacing: -0.02em;
+}
+
+[data-style="xp"] .text-page-title {
+	font-size: clamp(1.75rem, 3.4vw, 2.5rem);
+	font-weight: 700;
+	line-height: 1.05;
+	letter-spacing: -0.02em;
+}
+
+[data-style="xp"] .text-lead {
+	font-size: 1rem;
+	line-height: 1.55;
+}
+
+[data-style="xp"] :is(.text-label, .text-meta, .nb-chip) {
+	letter-spacing: 0.08em;
+}
+
+[data-style="xp"] .prose-dbm img {
+	box-shadow:
+		var(--xp-raised),
+		0 2px 6px color-mix(in srgb, var(--xp-frame-dark) 35%, transparent);
+}
+
+[data-style="xp"] .prose-dbm figcaption {
+	border-left: 3px solid var(--xp-frame);
+	background-color: var(--xp-silver);
+	padding: 0.35em 0.6em;
+	color: #000;
+}
+
+[data-style="xp"] .page-window > .mt-12 {
+	margin-top: 1.25rem;
+}
+
+[data-style="xp"] :is(.page-window > h1, .page-window > .mt-12 > h1) {
+	margin-top: 1.25rem;
+}
+
+[data-style="xp"] :is(.page-window > p, .page-window > .mt-12 > p) {
+	margin-top: 0.75rem;
+}
+
+[data-style="xp"] .page-window > .mt-12 > div {
+	margin-top: 1rem;
+}
+
+[data-style="xp"] .page-window {
+	padding-bottom: 1rem;
+}
+
+[data-style="xp"] .prose-dbm h2 {
+	border-top-color: var(--xp-field);
+}
+
+[data-style="xp"] .prose-dbm h2::before {
+	background: var(--xp-border);
+	box-shadow: var(--xp-raised);
+	color: var(--xp-title-ink);
+}
+
+[data-style="xp"] :is(.prose-dbm ul > li::before, .prose-dbm ol > li::marker) {
+	color: var(--xp-border);
+}
+
+[data-style="xp"]
+	:is(
+		.prose-dbm figure > a:hover img,
+		.prose-dbm figure > a:focus-visible img
+	) {
+	outline: 2px solid var(--xp-select);
+}
+
+[data-style="xp"] button[aria-label="Newest first"],
+[data-style="xp"] button[aria-label="Oldest first"] {
+	border: var(--button-edge);
+	background-color: var(--button-surface);
+	background-image: var(--button-image);
+	box-shadow: var(--shadow-hard-sm);
+	padding: 0.35rem 0.6rem;
+	color: var(--button-ink);
+	font-size: 0.8125rem;
+	font-weight: var(--button-weight);
+}
+
+[data-style="xp"]
+	:is(
+		button[aria-label="Newest first"],
+		button[aria-label="Oldest first"]
+	):hover {
+	background-color: var(--hover-fill);
+	box-shadow: var(--button-hover-shadow);
+}
+
+[data-style="xp"]
+	:is(
+		button[aria-label="Newest first"],
+		button[aria-label="Oldest first"]
+	):active {
+	background-color: var(--press-fill);
+	box-shadow: var(--button-press-shadow);
+}
+
+[data-style="xp"] .page-window > p > a:not(.nb-chip),
+[data-style="xp"] .page-window > p > a:not(.nb-chip):hover {
+	background: transparent;
+	color: var(--xp-link);
+	text-decoration: underline;
+	text-decoration-color: currentColor;
+}
+
+[data-style="xp"] section.nb-panel ul > li {
+	border-bottom: 1px solid var(--xp-field);
+	padding-bottom: 0.5rem;
+}
+
+[data-style="xp"] section.nb-panel ul > li:last-child {
+	border-bottom: 0;
+}
+
+[data-style="xp"] :is(a.break-all.text-lg, a.text-lg.font-extrabold) {
+	border: 1px solid var(--xp-field);
+	background-color: #fff;
+	box-shadow: var(--xp-recessed);
+	padding: 0.5rem 0.7rem;
+	color: #000;
+}
+
+[data-style="xp"] :is(a.break-all.text-lg, a.text-lg.font-extrabold):hover {
+	color: #000;
+	text-decoration-color: var(--xp-border);
+}
+
+[data-style="xp"] .nb-panel.nb-lift.outline {
+	outline-color: var(--xp-select);
+}
 [data-style="skeuomorphic"] {
 	/* A milled plate: tight corners on controls, a wider one on panels, a
 	   2px lift and a 3px recess under a press. Rivets and the lit top lip are
@@ -4322,7 +4647,7 @@
 
 [data-style="xp"] .nb-spot::after {
 	display: block;
-	--spot-color: rgb(255 255 255 / 0.1);
+	--spot-color: color-mix(in srgb, var(--xp-frame-light) 18%, transparent);
 }
 
 @media (hover: hover) {
@@ -4559,6 +4884,10 @@ input[type="range"]::-moz-range-thumb {
 /* The theme page's selected chip is the only glyph that moves in this style.
    A stationary chip keeps the contrast audit's text attribution stable. */
 [data-style="futuristic"] .chip-in {
+	animation: none;
+}
+
+[data-style="xp"] .chip-in {
 	animation: none;
 }
 
