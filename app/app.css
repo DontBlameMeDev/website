@@ -2243,34 +2243,49 @@
 
 /* --- MS-DOS ---------------------------------------------------------------
 
-   A text-mode skin, not a new palette. Monospace type, square corners,
-   double-line boxes, reverse-video controls, and a static scanline texture
-   carry the era. The colorscheme's own text, surfaces, and accent stay in
-   charge, so every palette keeps its real colors and previews stay honest. */
+   A character-mode program, not a palette tint. An action bar, titled panels,
+   directory rows, bracketed controls, and a status footer carry the era. The
+   scheme still supplies every ink and fill, so previews and custom palettes
+   stay honest. */
 [data-style="msdos"] {
 	--bw: 1px;
 	--bw-heavy: 3px;
+	--radius: 0px;
+	--control-radius: 0px;
 	--lift: 0px;
 	--press: 0px;
+	--line-style: solid;
 	--font-sans: "JetBrains Mono NF", ui-monospace, "Courier New", monospace;
-	/* A blocky bar, finished from the shared scrollbar tokens. */
-	--scrollbar-size: 14px;
-	--scrollbar-radius: 0px;
-	--scrollbar-thumb: var(--accent-surface);
-	--scrollbar-thumb-image: none;
-	--scrollbar-thumb-line: 1px solid var(--edge);
-	--scrollbar-thumb-shadow: none;
-	--scrollbar-track: var(--page-surface);
-	--scrollbar-track-shadow: none;
 
-	/* The chrome tone: one shallow step off the page toward --surface0, which
-	   is where the tight palettes put their text at 6.8:1. The menu bar, the
-	   title bar, and the status bar carry --text, so the step is capped at
-	   the point every palette still clears AAA on it. */
+	--panel-edge: 1px solid var(--edge);
+	--panel-top-edge: 1px solid var(--edge);
+	--well-edge: 1px solid var(--edge);
+	--button-edge: 1px solid var(--edge);
+	--control-edge: var(--edge);
+	--button-weight: 700;
+
+	/* Hover picks the accent edge; the menu and status cells use reverse video. */
+	--hover-edge: var(--accent-surface);
+	--hover-fill: var(--plain-surface);
+	--press-fill: var(--plain-surface);
+	--button-hover-shadow: none;
+	--button-press-shadow: none;
+	--input-shadow: inset 0 0 0 1px var(--edge);
+	--label-shadow: none;
+
+	/* A panel is a single-pixel box inside a second, gapped frame. */
+	--shadow-hard:
+		inset 0 0 0 1px var(--edge), 0 0 0 1px var(--page-surface),
+		0 0 0 2px var(--edge);
+	--shadow-hard-lg:
+		inset 0 0 0 1px var(--edge), 0 0 0 1px var(--page-surface),
+		0 0 0 2px var(--edge);
+	--shadow-hard-sm: none;
+	--shadow-well: inset 0 0 0 1px var(--edge);
+
+	/* Chrome is one shallow step toward surface0. The scanlines sit in the
+	   surface image, behind glyphs, so measured text pairs stay untouched. */
 	--dos-chrome: color-mix(in srgb, var(--surface0) 45%, var(--page-surface));
-
-	/* Scanlines live in the surface image, behind the glyphs, so the palette's
-	   measured text contrast is untouched. */
 	--dos-scan: light-dark(rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.045));
 	--page-image: repeating-linear-gradient(
 		to bottom,
@@ -2281,13 +2296,19 @@
 	--plain-image: var(--page-image);
 	--well-image: var(--page-image);
 
-	/* A pair of hairlines: the border plus the inset rule. */
-	--shadow-hard: inset 0 0 0 1px var(--edge);
-	--shadow-hard-lg: inset 0 0 0 1px var(--edge);
-	--shadow-hard-sm: none;
-	--shadow-well: none;
+	--scrollbar-size: 14px;
+	--scrollbar-radius: 0px;
+	--scrollbar-thumb: var(--accent-surface);
+	--scrollbar-thumb-image: none;
+	--scrollbar-thumb-line: 1px solid var(--edge);
+	--scrollbar-thumb-shadow: none;
+	--scrollbar-track: var(--page-surface);
+	--scrollbar-track-shadow: none;
+}
 
-	--hover-edge: var(--accent-surface);
+[data-style="msdos"] body {
+	font-feature-settings: "liga" 0;
+	font-variant-numeric: tabular-nums;
 }
 
 /* --- Minecraft ------------------------------------------------------------
@@ -2398,26 +2419,44 @@
 	}
 }
 
-/* The header is a menu bar on the palette's own chrome tone. */
+/* The action bar: one boxed title cell, then one cell per menu item. */
 [data-style="msdos"] header.nb-chrome {
 	background-color: var(--dos-chrome);
 	background-image: var(--plain-image);
 	border: 0;
-	border-bottom: 1px solid var(--accent-surface);
+	border-bottom: 2px solid var(--edge);
 	border-radius: 0;
 	box-shadow: none;
 }
 
+[data-style="msdos"] header.nb-chrome > div:first-child {
+	min-height: 3.25rem;
+	padding: 0.35rem 1ch;
+	gap: 0.25rem 1.5ch;
+}
+
+[data-style="msdos"] header.nb-chrome nav {
+	gap: 0;
+	border: 1px solid var(--edge);
+	background-color: var(--page-surface);
+}
+
 [data-style="msdos"] header.nb-chrome nav a {
-	padding: 0.35rem 0.55rem;
+	padding: 0.3rem 0.7rem;
+	border-right: 1px solid var(--edge);
 	color: var(--text);
-	letter-spacing: 0.08em;
+	font-size: 0.6875rem;
+	letter-spacing: 0.1em;
 	text-decoration: none;
+}
+
+[data-style="msdos"] header.nb-chrome nav a:last-child {
+	border-right: 0;
 }
 
 [data-style="msdos"] header.nb-chrome nav a:hover {
 	background-color: var(--text);
-	color: var(--page-surface);
+	color: var(--base);
 }
 
 [data-style="msdos"] header.nb-chrome nav a[aria-current="page"] {
@@ -2426,14 +2465,23 @@
 	text-decoration: none;
 }
 
-/* The brand keeps its mark, with a text-mode cursor after it. */
 [data-style="msdos"] header.nb-chrome > div > a:first-child {
-	letter-spacing: 0.08em;
+	padding: 0.25rem 0.6rem;
+	border: 1px solid var(--edge);
+	background-color: var(--page-surface);
+	color: var(--text);
+	font-size: 0.75rem;
+	letter-spacing: 0.12em;
 	text-transform: uppercase;
 }
 
+[data-style="msdos"] header.nb-chrome > div > a:first-child img {
+	display: none;
+}
+
 [data-style="msdos"] header.nb-chrome > div > a:first-child:hover {
-	color: var(--text);
+	background-color: var(--text);
+	color: var(--base);
 }
 
 [data-style="msdos"] header.nb-chrome > div > a:first-child::after {
@@ -2441,25 +2489,29 @@
 	display: inline-block;
 	width: 0.5em;
 	height: 1em;
-	margin-left: 0.35rem;
+	margin-left: 0.5ch;
 	background-color: var(--accent-surface);
 	vertical-align: -0.12em;
 	animation: dos-blink 1.06s steps(1) infinite;
 }
 
-/* The reading bar is a segmented loader in the accent color. */
+[data-style="msdos"] header.nb-chrome > div > a:first-child:hover::after {
+	background-color: var(--page-surface);
+}
+
+/* The reading bar is a segmented tick strip. */
 [data-style="msdos"] header.nb-chrome > .relative {
-	height: 5px;
-	background-color: var(--dos-chrome);
-	border-top: 1px solid var(--accent-surface);
+	height: 4px;
+	background-color: var(--page-surface);
+	border-top: 1px solid var(--edge);
 }
 
 [data-style="msdos"] header.nb-chrome > .relative .bg-accent {
 	background-color: var(--accent-surface);
 	background-image: repeating-linear-gradient(
 		90deg,
-		var(--accent-surface) 0 6px,
-		transparent 6px 9px
+		var(--accent-surface) 0 3px,
+		transparent 3px 5px
 	);
 }
 
@@ -2467,9 +2519,10 @@
 	content: none;
 }
 
-/* A page masthead is a double-line box with a title bar. */
+/* Masthead: a titled panel with a status rail on its lower edge. */
 [data-style="msdos"] .page-window {
-	padding: 0 0 1.5rem;
+	position: relative;
+	padding: 0 0 2ch;
 	border: 1px solid var(--edge);
 	border-radius: 0;
 	background-color: var(--panel-surface);
@@ -2477,14 +2530,29 @@
 	box-shadow: var(--shadow-hard);
 }
 
+[data-style="msdos"] .page-window::after {
+	content: "";
+	position: absolute;
+	left: -1px;
+	right: -1px;
+	bottom: -4px;
+	height: 2px;
+	background: repeating-linear-gradient(
+		90deg,
+		var(--accent-surface) 0 2px,
+		transparent 2px 4px
+	);
+}
+
 [data-style="msdos"] .page-window > div:first-child {
-	align-items: center;
-	min-height: 30px;
-	padding: 0.3rem 0.6rem;
-	border-bottom: 1px solid var(--accent-surface);
+	min-height: 2.75rem;
+	padding: 0.4rem 2ch;
+	border-bottom: 1px solid var(--edge);
 	background-color: var(--dos-chrome);
 	background-image: var(--plain-image);
 	color: var(--text);
+	font-size: 0.75rem;
+	letter-spacing: 0.1em;
 	text-transform: uppercase;
 }
 
@@ -2501,26 +2569,42 @@
 	text-shadow: none;
 }
 
-[data-style="msdos"] .page-window > h1,
-[data-style="msdos"] .page-window > p {
-	margin-inline: 1.5rem;
+[data-style="msdos"] .page-window .win-controls {
+	display: inline-flex;
+	gap: 2px;
 }
 
-[data-style="msdos"] .page-window > h1 {
-	margin-top: 2rem;
+[data-style="msdos"] .page-window .win-controls > span {
+	width: 6px;
+	height: 6px;
+	border: 1px solid var(--edge);
+	background-color: var(--page-surface);
+}
+
+[data-style="msdos"] .page-window .win-controls > span:last-child {
+	background-color: var(--accent-surface);
+}
+
+[data-style="msdos"] .page-window > h1,
+[data-style="msdos"] .page-window > p,
+[data-style="msdos"] .page-window > div:not(:first-child) {
+	margin-inline: 2ch;
 }
 
 [data-style="msdos"] .page-window > div:not(:first-child) {
-	margin-inline: 1.5rem;
+	margin-top: 1.5rem;
 }
 
-/* Titles type themselves in, then the cursor blinks out. */
+[data-style="msdos"] .page-window > h1 {
+	margin-top: 2ch;
+}
+
+/* Titles type in once, then the caret stops. */
 [data-style="msdos"] .page-window h1 {
+	line-height: 1.02;
+	letter-spacing: 0.01em;
 	text-transform: uppercase;
-	letter-spacing: -0.01em;
-	text-shadow: 0 0 10px
-		color-mix(in srgb, var(--accent-surface) 28%, transparent);
-	animation: dos-type 900ms steps(28, end);
+	animation: dos-type 600ms steps(24, end) both;
 }
 
 [data-style="msdos"] .page-window h1::after {
@@ -2528,23 +2612,35 @@
 	display: inline-block;
 	width: 0.45em;
 	height: 0.82em;
-	margin-left: 0.18em;
+	margin-left: 0.2ch;
 	background-color: var(--accent-surface);
 	vertical-align: baseline;
 	animation:
-		dos-blink 1.06s steps(1) 4,
-		dos-cursor-out 1ms 4.3s forwards;
+		dos-blink 1.06s steps(1) 3,
+		dos-cursor-out 1ms 3.2s forwards;
+}
+
+[data-style="msdos"] .page-window > p.text-lead {
+	margin-top: 1.5rem;
+	padding-left: 1.5ch;
+	border-left: 2px solid var(--accent-surface);
+	color: var(--subtext1);
+}
+
+[data-style="msdos"] .page-window > p.text-lead::before {
+	content: "> " / "";
+	color: var(--accent-surface);
 }
 
 [data-style="msdos"] .text-display,
 [data-style="msdos"] .text-page-title {
 	font-weight: 700;
-	letter-spacing: -0.01em;
-	line-height: 1.05;
+	letter-spacing: 0.01em;
+	line-height: 1.02;
 }
 
 [data-style="msdos"] .text-label {
-	letter-spacing: 0.1em;
+	letter-spacing: 0.14em;
 }
 
 [data-style="msdos"] p.text-label::before {
@@ -2552,31 +2648,135 @@
 	color: color-mix(in srgb, var(--accent-surface) 65%, var(--text));
 }
 
-/* Controls snap instead of easing. */
-[data-style="msdos"] .nb-lift {
+/* A card's first row becomes its title bar, using only existing content. */
+[data-style="msdos"]
+	.nb-panel
+	> :first-child:not([data-style]):not(.nb-line):not(summary):not(.text-label) {
+	margin: -1px -1px 1.25rem;
+	padding: 0.35rem 1ch;
+	border-bottom: 1px solid var(--edge);
+	background-color: var(--dos-chrome);
+	background-image: var(--plain-image);
+	color: var(--text);
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+[data-style="msdos"]
+	.nb-panel
+	> :first-child:where(:not([data-style]):not(.nb-line))
+	h2 {
+	color: var(--text);
+}
+
+[data-style="msdos"] a.nb-panel:hover h2,
+[data-style="msdos"] a.nb-panel:focus-visible h2 {
+	padding-inline: 0.25ch;
+	background-color: var(--accent-surface);
+	color: var(--on-accent);
+}
+
+[data-style="msdos"] a.nb-panel h2 {
 	transition: none;
 }
 
-[data-style="msdos"] .nb-lift:hover {
-	border-color: var(--accent-surface);
+[data-style="msdos"] .nb-well > span:last-child > .text-subtext0 {
+	background-color: var(--plain-surface);
+	color: var(--text);
+	padding-inline: 0.25ch;
+}
+
+[data-style="msdos"] .nb-spot img {
+	filter: grayscale(1);
+}
+
+[data-style="msdos"] .nb-line-b {
+	border-bottom-style: dashed;
+}
+
+[data-style="msdos"] main > div > :is(.mt-20, .mt-14, .mt-12) {
+	margin-top: 2.5rem;
+}
+
+[data-style="msdos"] nav[aria-label="On this page"] span.bg-accent {
+	display: none;
+}
+
+[data-style="msdos"] nav[aria-label="On this page"] a[aria-current="true"] {
+	background-color: var(--accent-surface);
+	color: var(--on-accent);
+	text-decoration: none;
+}
+
+[data-style="msdos"] aside dl > div {
+	border-bottom-style: dashed;
+}
+
+[data-style="msdos"]
+	section.nb-panel
+	> ul
+	> li:has(> span[aria-hidden="true"].bg-accent)::before {
+	content: "> " / "";
+	color: var(--accent-surface);
+}
+
+[data-style="msdos"]
+	section.nb-panel
+	> ul
+	> li
+	> span[aria-hidden="true"].bg-accent {
+	display: none;
+}
+
+/* Controls snap between states. Brackets turn each one into a menu entry. */
+[data-style="msdos"] .nb-lift,
+[data-style="msdos"] .nb-button,
+[data-style="msdos"] .nb-chip {
+	transition: none;
+}
+
+[data-style="msdos"] .hero-step,
+[data-style="msdos"] .chip-in {
+	animation: none;
 }
 
 [data-style="msdos"] .nb-button {
-	letter-spacing: 0.06em;
+	padding: 0.45rem 0.8rem;
+	letter-spacing: 0.08em;
 	text-transform: uppercase;
-	transition: none;
+}
+
+[data-style="msdos"] .nb-button::before {
+	content: "[" / "";
+}
+
+[data-style="msdos"] .nb-button::after {
+	content: "]" / "";
+}
+
+[data-style="msdos"] header.nb-chrome .nb-button::before,
+[data-style="msdos"] header.nb-chrome .nb-button::after {
+	content: none;
 }
 
 [data-style="msdos"] .nb-button.nb-accent {
-	border-color: var(--accent-surface);
+	border-color: var(--edge);
 }
 
 [data-style="msdos"] .nb-chip {
 	background-color: transparent;
 	background-image: none;
 	color: var(--text);
+	letter-spacing: 0.1em;
 	text-transform: uppercase;
-	transition: none;
+}
+
+[data-style="msdos"] .nb-chip[aria-pressed="true"]::before {
+	content: "[" / "";
+}
+
+[data-style="msdos"] .nb-chip[aria-pressed="true"]::after {
+	content: "]" / "";
 }
 
 [data-style="msdos"] .nb-chip:is(.nb-accent, .bg-accent) {
@@ -2588,18 +2788,24 @@
 [data-style="msdos"] .nb-chip:not(.nb-accent):not(.bg-accent):hover {
 	border-color: var(--text);
 	background-color: var(--text);
-	color: var(--page-surface);
+	color: var(--base);
 }
 
 [data-style="msdos"] .nb-input {
 	background-color: var(--page-surface);
 	background-image: var(--page-image);
+	border-bottom-width: 2px;
 	caret-color: var(--accent-surface);
 }
 
 [data-style="msdos"] :focus-visible {
-	outline: 1px dotted var(--focus-ring);
-	outline-offset: 3px;
+	outline: 2px solid var(--focus-ring);
+	outline-offset: 2px;
+}
+
+[data-style="msdos"] .search-field:has(input:focus-visible) {
+	outline-width: 2px;
+	outline-offset: 2px;
 }
 
 [data-style="msdos"] a[href="#main-content"]:focus {
@@ -2607,28 +2813,36 @@
 	color: var(--on-accent);
 }
 
-/* Prose is a terminal: a prompt for bullets, bracketed numbers, and the
-   palette's own links and code colors. */
+/* Prose is a terminal listing: prompts, numbered headings, bracketless code. */
+[data-style="msdos"] .prose-dbm {
+	line-height: 1.6;
+}
+
 [data-style="msdos"] .prose-dbm a {
 	color: var(--text);
+	text-decoration-style: dotted;
 	text-decoration-color: currentColor;
 	text-decoration-thickness: 1px;
 	transition: none;
 }
 
+[data-style="msdos"] .prose-dbm h2 {
+	border-top-style: dashed;
+}
+
 [data-style="msdos"] .prose-dbm h4 {
-	color: var(--subtext0);
+	color: var(--text);
 }
 
 [data-style="msdos"] .prose-dbm ul > li::before {
-	content: ">";
+	content: ">" / "";
 	font-size: 0.7em;
 	line-height: 2.3;
 	color: color-mix(in srgb, var(--accent-surface) 65%, var(--text));
 }
 
 [data-style="msdos"] .prose-dbm h2::before {
-	content: "[" counter(section, decimal-leading-zero) "]";
+	content: "[" counter(section, decimal-leading-zero) "]" / "";
 	border: 0;
 	background: transparent;
 	padding: 0;
@@ -2637,12 +2851,25 @@
 	font-size: 0.8125rem;
 }
 
+[data-style="msdos"] .prose-dbm figcaption::before {
+	content: "> " / "";
+	color: var(--accent-surface);
+}
+
+[data-style="msdos"] .prose-dbm blockquote {
+	border-left-width: var(--bw-heavy);
+}
+
+[data-style="msdos"] .prose-dbm code {
+	border-style: dashed;
+}
+
 [data-style="msdos"] .prose-dbm .code-block {
 	background-image: var(--well-image);
 }
 
 [data-style="msdos"] .prose-dbm .code-block__bar {
-	border-bottom-color: var(--accent-surface);
+	border-bottom-color: var(--edge);
 	background-color: var(--dos-chrome);
 	background-image: var(--plain-image);
 	color: var(--text);
@@ -2662,25 +2889,64 @@
 	color: var(--on-accent);
 }
 
-/* The footer is a status bar on the palette's own chrome tone. */
+/* The footer is the status line: a labeled cell, joined key cells, and one
+   readout on the right. */
 [data-style="msdos"] footer.nb-line-t {
-	border-top: 1px solid var(--accent-surface);
+	margin-top: 4rem;
+	border-top: 1px solid var(--edge);
 	background-color: var(--dos-chrome);
 	background-image: var(--plain-image);
+	box-shadow:
+		inset 0 3px 0 var(--page-surface),
+		inset 0 4px 0 var(--edge);
+}
+
+[data-style="msdos"] footer > div {
+	padding-block: 2.5rem;
 }
 
 [data-style="msdos"] footer :is(p, span, a, .text-label) {
 	color: var(--text);
 }
 
+[data-style="msdos"] footer .text-label {
+	display: inline-block;
+	padding: 0.1rem 0.5rem;
+	border: 1px solid var(--edge);
+	background-color: var(--accent-surface);
+	color: var(--on-accent);
+}
+
 [data-style="msdos"] footer .text-label::before {
 	content: "";
 }
 
+[data-style="msdos"] footer ul {
+	gap: 0;
+	border: 1px solid var(--edge);
+}
+
+[data-style="msdos"] footer li + li {
+	border-left: 1px solid var(--edge);
+}
+
+[data-style="msdos"] footer .nb-chip {
+	border: 0;
+}
+
 [data-style="msdos"] footer a:not(.nb-chip):hover {
-	background-color: var(--accent-surface);
-	color: var(--on-accent);
-	text-decoration-color: var(--on-accent);
+	background-color: var(--text);
+	color: var(--base);
+	text-decoration-color: var(--base);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	[data-style="msdos"] .page-window h1,
+	[data-style="msdos"] .page-window h1::after,
+	[data-style="msdos"] header.nb-chrome > div > a:first-child::after,
+	[data-style="msdos"] .hero-step {
+		animation: none;
+	}
 }
 
 /* --- Minecraft chrome -----------------------------------------------------
