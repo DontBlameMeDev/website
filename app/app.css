@@ -1413,7 +1413,7 @@
 }
 
 [data-style="glassmorphism"] header.nb-chrome > div > a:first-child {
-	margin-left: -0.7rem;
+	margin-left: -0.35rem;
 	padding: 0.35rem 0.7rem;
 	border: 1px solid var(--glass-rim-soft);
 	border-radius: 999px;
