@@ -1230,30 +1230,27 @@
 }
 
 [data-style="glassmorphism"] {
-	/* Material, not just shape: translucent fills under a heavy blur, hairlines
-	   instead of ink, a specular rim on every edge, and an aurora on the page
-	   for the panes to refract. The radius and the rim are borrowed from Apple's
-	   Liquid Glass; the lensing needs an SVG displacement filter, which costs a
-	   compositor layer per pane, so the material leans on blur and light. */
 	--bw: 1px;
 	--bw-heavy: 2px;
-	--radius: 28px;
-	--lift: 0px;
+	--radius: 30px;
+	--control-radius: 999px;
+	--panel-radius: 30px;
+	--well-radius: 18px;
+	--lift: -2px;
 	--press: 0px;
-	/* Every pane below is painted with an opaque surface, so a blur behind it
-	   has nothing to show through. It still re-composites the scrolling content
-	   on every frame, which costs a third of the frame budget in this style. */
+	/* Text never sits on a blur. The one filter below belongs to the sticky
+	   chrome, whose labels keep their own opaque plates. */
 	--backdrop: none;
 
-	/* The aurora is the scheme's own surface tinted with its accents, so the
-	   wash stays inside the palette instead of dragging in a fixed hue. It is
-	   sized so the 11px muted labels that sit straight on the page keep their
-	   AAA on every palette. A light scheme has the tighter budget: its dim ink
-	   is a step above the crust, so a dark accent tint pulls the page down into
-	   the glyphs, while a dark scheme's light ink has more room over a lifted
-	   wash. light-dark() reads the scheme's own color-scheme, so a new palette
-	   needs no line here. Keep color-scheme on the [data-scheme] blocks: the
-	   build lowers light-dark() to a variable pair that they define. */
+	/* Light is drawn on the edges. These are private to this style and follow
+	   the scheme's own ink, so a new palette needs no glass-specific value. */
+	--glass-rim: color-mix(in srgb, var(--text) 55%, transparent);
+	--glass-rim-soft: color-mix(in srgb, var(--text) 24%, transparent);
+	--glass-shade: color-mix(in srgb, var(--ink) 28%, transparent);
+	--glass-drop: color-mix(in srgb, var(--ink) 45%, transparent);
+
+	/* The aurora keeps the same low intensity as before. One extra pool picks
+	   up the chosen accent so a hue change reaches the whole spatial field. */
 	--aurora-mauve: light-dark(
 		color-mix(in srgb, var(--mauve) 3%, var(--crust)),
 		color-mix(in srgb, var(--mauve) 12%, var(--crust))
@@ -1270,6 +1267,10 @@
 		color-mix(in srgb, var(--pink) 3%, var(--crust)),
 		color-mix(in srgb, var(--pink) 10%, var(--crust))
 	);
+	--glass-accent-wash: light-dark(
+		color-mix(in srgb, var(--accent-surface) 2%, var(--crust)),
+		color-mix(in srgb, var(--accent-surface) 7%, var(--crust))
+	);
 
 	--page-image:
 		radial-gradient(
@@ -1278,6 +1279,11 @@
 			transparent 72%
 		),
 		radial-gradient(52rem 40rem at 88% 2%, var(--aurora-blue), transparent 72%),
+		radial-gradient(
+			42rem 30rem at 76% 104%,
+			var(--glass-accent-wash),
+			transparent 72%
+		),
 		linear-gradient(
 			160deg,
 			var(--aurora-wash) 0%,
@@ -1285,45 +1291,56 @@
 			var(--aurora-pink) 100%
 		);
 
-	/* Text sits on the palette's own surfaces so the contrast each palette was
-	   tuned for survives the blur. The glass reads through the header, the
-	   aurora, the soft shadows, and the specular rims. */
+	/* Opaque palette fills below every glyph. The wash is a strip on the
+	   leading edge only, where no copy sits. */
 	--panel-surface: light-dark(var(--base), var(--mantle));
 	--well-surface: light-dark(var(--mantle), var(--crust));
 	--plain-surface: light-dark(var(--base), var(--mantle));
+	--panel-image: linear-gradient(
+		180deg,
+		color-mix(in srgb, var(--text) 6%, transparent),
+		transparent 6px
+	);
+	--well-image: none;
+	--plain-image: none;
+	--button-image: none;
 
-	/* Liquid Glass casts a soft drop shadow and catches light on its rim. The rim
-	   is directional, the way a lens is: a bright specular line along the top,
-	   faint light down both sides, and a dark inner edge at the bottom, so the
-	   pane reads as a slab of glass rather than a rectangle. The drop shadow is
-	   black in every scheme, because a palette's crust is pale in the light
-	   ones. */
-	--edge: color-mix(in srgb, var(--ink) 18%, transparent);
+	/* A pane is separated from the field by its own edge, not by a hard ink
+	   line. The cap catches the light; the lower edge closes the slab. */
+	--edge: color-mix(in srgb, var(--ink) 20%, transparent);
+	--control-edge: color-mix(in srgb, var(--ink) 18%, transparent);
+	--panel-edge: 1px solid color-mix(in srgb, var(--text) 26%, transparent);
+	--panel-top-edge: 2px solid var(--glass-rim);
+	--well-edge: 1px solid color-mix(in srgb, var(--ink) 22%, transparent);
+	--button-edge: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
 	--shadow-hard:
-		0 14px 30px -20px rgb(0 0 0 / 0.28), inset 0 1px 0 rgb(255 255 255 / 0.5),
-		inset 1px 0 0 rgb(255 255 255 / 0.12), inset -1px 0 0 rgb(
-			255 255 255 / 0.12
-		),
-		inset 0 -1px 0 rgb(0 0 0 / 0.25);
+		0 22px 44px -28px var(--glass-drop),
+		0 4px 12px -8px color-mix(in srgb, var(--ink) 35%, transparent),
+		inset 0 1px 0 var(--glass-rim),
+		inset 1px 0 0 var(--glass-rim-soft),
+		inset -1px 0 0 var(--glass-rim-soft),
+		inset 0 -1px 0 var(--glass-shade);
 	--shadow-hard-lg:
-		0 18px 40px -24px rgb(0 0 0 / 0.34), inset 0 1px 0 rgb(255 255 255 / 0.6),
-		inset 1px 0 0 rgb(255 255 255 / 0.16), inset -1px 0 0 rgb(
-			255 255 255 / 0.16
-		),
-		inset 0 -1px 0 rgb(0 0 0 / 0.3);
+		0 30px 60px -30px var(--glass-drop),
+		0 8px 18px -12px color-mix(in srgb, var(--ink) 40%, transparent),
+		inset 0 1px 0 var(--glass-rim),
+		inset 1px 0 0 var(--glass-rim-soft),
+		inset -1px 0 0 var(--glass-rim-soft),
+		inset 0 -1px 0 var(--glass-shade);
 	--shadow-hard-sm:
-		0 8px 18px -12px rgb(0 0 0 / 0.24),
-		inset 0 1px 0 rgb(255 255 255 / 0.4),
-		inset 1px 0 0 rgb(255 255 255 / 0.1), inset -1px 0 0 rgb(255 255 255 / 0.1),
-		inset 0 -1px 0 rgb(0 0 0 / 0.2);
+		0 10px 24px -16px var(--glass-drop), inset 0 1px 0 var(--glass-rim),
+		inset 0 -1px 0 var(--glass-shade);
+	--shadow-well:
+		inset 0 1px 0 var(--glass-rim-soft), inset 0 -1px 0 var(--glass-shade);
+	--input-shadow: none;
+	--button-hover-shadow: var(--shadow-hard-lg);
+	--button-press-shadow: none;
+	--label-shadow: none;
 
-	/* A pane brightens under the pointer, the way a lit surface does: the fill
-	   steps down the surface ramp toward the well and the page, which keeps the
-	   ink above AAA where a mix toward the ink itself would not. */
 	--hover-edge: color-mix(in srgb, var(--accent-surface) 45%, var(--edge));
 	--hover-fill: color-mix(in srgb, var(--mantle) 55%, var(--plain-surface));
 	--press-fill: color-mix(in srgb, var(--crust) 85%, var(--plain-surface));
-	--card-hover-fill: color-mix(in srgb, var(--crust) 45%, var(--panel-surface));
+	--card-hover-fill: color-mix(in srgb, var(--crust) 38%, var(--panel-surface));
 	--accent-hover-fill: color-mix(
 		in srgb,
 		var(--ink) 14%,
@@ -1334,17 +1351,16 @@
 		var(--ink) 22%,
 		var(--accent-surface)
 	);
-	/* A glass bar: a slim pill with the same specular rim as the panes. */
+
 	--scrollbar-size: 14px;
 	--scrollbar-radius: 999px;
-	--scrollbar-thumb: color-mix(in srgb, var(--ink) 45%, transparent);
+	--scrollbar-thumb: color-mix(in srgb, var(--text) 45%, transparent);
 	--scrollbar-thumb-line: 4px solid transparent;
-	--scrollbar-thumb-shadow: inset 0 1px 0 rgb(255 255 255 / 0.45);
+	--scrollbar-thumb-shadow: inset 0 1px 0 var(--glass-rim);
 }
 
-/* The aurora is a fixed layer under the content, so the panes keep the same
-   light behind them from the first fold to the last instead of drifting as the
-   page scrolls. */
+/* A fixed field under the content, so a pane keeps the same light behind it
+   from the first fold to the last. */
 [data-style="glassmorphism"] body::before {
 	content: "";
 	position: fixed;
@@ -1355,16 +1371,11 @@
 	opacity: 0.25;
 }
 
-/* A card that scopes its own scheme previews that palette, so it sits on that
-   palette's own page: a translucent pane over another scheme's page would mix
-   two palettes in one card and drop its text below AAA. */
+/* A card that scopes its own scheme previews that palette on its own page. */
 [data-style="glassmorphism"] .nb-panel[data-scheme] {
 	background-color: var(--page-surface);
 }
 
-/* Accent text on the light aurora loses about a point of contrast to the
-   wash. The bullets are decoration, so they take the ink that every palette
-   guarantees against its own page. */
 [data-style="glassmorphism"] .prose-dbm ul > li::before,
 [data-style="glassmorphism"] .prose-dbm ol > li::marker {
 	color: var(--ink);
@@ -1374,24 +1385,424 @@
 	color: var(--ink);
 }
 
-/* Glass keeps the sticky header a pane, so whatever scrolls under it blurs.
-   Full bleed, so its corners stay square. */
-[data-style="glassmorphism"] .site-header {
-	/* The header scrolls over anything, including a light card on a dark page,
-	   so it keeps only a little show-through. Muted nav links need almost the
-	   page surface behind them to stay above 7:1. */
-	background-color: color-mix(in srgb, var(--page-surface) 99.5%, transparent);
-	background-image: none;
-	backdrop-filter: var(--backdrop);
-	border-radius: 0;
+[data-style="glassmorphism"] main {
+	padding-top: 2rem;
 }
 
-/* The layer above paints the aurora, so the body must not paint it too. A body
-   background reaches the canvas when the root has none, which doubles it. */
+@media (min-width: 40rem) {
+	[data-style="glassmorphism"] main {
+		padding-top: 2.5rem;
+	}
+}
+
+/* Only the sticky chrome filters what passes under it. Its own labels sit on
+   opaque plates, so no glyph is measured through the blur. */
+[data-style="glassmorphism"] .site-header {
+	background-color: color-mix(in srgb, var(--page-surface) 97%, transparent);
+	background-image: linear-gradient(
+		180deg,
+		color-mix(in srgb, var(--text) 5%, transparent),
+		transparent 2px
+	);
+	backdrop-filter: blur(18px) saturate(1.2);
+	-webkit-backdrop-filter: blur(18px) saturate(1.2);
+	border-radius: 0 0 24px 24px;
+	box-shadow:
+		0 20px 45px -34px var(--glass-drop),
+		inset 0 -1px 0 var(--glass-rim-soft);
+}
+
+[data-style="glassmorphism"] header.nb-chrome > div > a:first-child {
+	margin-left: -0.7rem;
+	padding: 0.35rem 0.7rem;
+	border: 1px solid var(--glass-rim-soft);
+	border-radius: 999px;
+	background-color: var(--page-surface);
+	box-shadow: inset 0 1px 0 var(--glass-rim);
+}
+
+[data-style="glassmorphism"] header.nb-chrome > div > a:first-child img {
+	border-radius: 999px;
+}
+
+[data-style="glassmorphism"] nav[aria-label="Primary"] {
+	gap: 0.15rem;
+	padding: 0.25rem;
+	border: 1px solid var(--glass-rim-soft);
+	border-radius: 999px;
+	background-color: var(--page-surface);
+	box-shadow:
+		inset 0 1px 0 var(--glass-rim),
+		0 10px 26px -20px var(--glass-drop);
+}
+
+[data-style="glassmorphism"] .nav-link {
+	min-height: 2.1rem;
+	padding: 0.35rem 0.75rem;
+	border-radius: 999px;
+	text-decoration: none;
+}
+
+[data-style="glassmorphism"] .nav-link:hover {
+	background-color: var(--hover-fill);
+	color: var(--text);
+}
+
+[data-style="glassmorphism"] .nav-link[aria-current="page"] {
+	background-color: var(--panel-surface);
+	color: var(--text);
+	box-shadow:
+		inset 0 1px 0 var(--glass-rim),
+		inset 0 -1px 0 var(--glass-shade);
+}
+
+[data-style="glassmorphism"] .nav-link::after {
+	content: none;
+}
+
+@media (max-width: 39.99rem) {
+	[data-style="glassmorphism"] nav[aria-label="Primary"] {
+		gap: 0;
+		padding: 0.15rem;
+	}
+
+	[data-style="glassmorphism"] .nav-link {
+		padding: 0.3rem 0.45rem;
+		font-size: 0.625rem;
+		letter-spacing: 0.04em;
+	}
+}
+
+/* Three small status ports belong to the masthead, not the site header. */
+[data-style="glassmorphism"] .page-window .win-controls {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+}
+
+[data-style="glassmorphism"] .page-window .win-controls > span {
+	width: 7px;
+	height: 7px;
+	border-radius: 999px;
+	background-color: var(--glass-rim-soft);
+	box-shadow: inset 0 1px 0 var(--glass-rim);
+}
+
+[data-style="glassmorphism"] .page-window .win-controls > span:first-child {
+	background-color: var(--accent-surface);
+}
+
+[data-style="glassmorphism"] .page-window .win-controls > span:nth-child(2) {
+	background-color: color-mix(
+		in srgb,
+		var(--accent-surface) 55%,
+		var(--page-surface)
+	);
+}
+
+/* The masthead is the brightest pane on the page. Its light lives on the
+   border and in a travelling specular line, never under the title. */
+[data-style="glassmorphism"] .page-window {
+	position: relative;
+	isolation: isolate;
+	border: var(--panel-edge);
+	border-top: var(--panel-top-edge);
+	border-radius: var(--panel-radius);
+	background-color: var(--panel-surface);
+	background-image: linear-gradient(
+		180deg,
+		color-mix(in srgb, var(--text) 5%, transparent),
+		transparent 16px
+	);
+	box-shadow: var(--shadow-hard-lg);
+	padding: clamp(1.25rem, 3vw, 2.75rem);
+}
+
+[data-style="glassmorphism"] .page-window::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 8%;
+	width: 42%;
+	height: 2px;
+	border-radius: 999px;
+	background: linear-gradient(
+		90deg,
+		transparent,
+		var(--glass-rim),
+		transparent
+	);
+	pointer-events: none;
+}
+
+[data-style="glassmorphism"] .page-window::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	padding: 1px;
+	border-radius: inherit;
+	background: linear-gradient(
+		140deg,
+		var(--glass-rim),
+		transparent 36%,
+		transparent 64%,
+		color-mix(in srgb, var(--accent-surface) 22%, transparent)
+	);
+	-webkit-mask:
+		linear-gradient(#000 0 0) content-box,
+		linear-gradient(#000 0 0);
+	-webkit-mask-composite: xor;
+	mask:
+		linear-gradient(#000 0 0) content-box,
+		linear-gradient(#000 0 0);
+	mask-composite: exclude;
+	pointer-events: none;
+}
+
+@keyframes glass-sheen {
+	0%,
+	100% {
+		opacity: 0.55;
+		transform: translateX(0);
+	}
+
+	50% {
+		opacity: 1;
+		transform: translateX(90%);
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	[data-style="glassmorphism"] .page-window::before {
+		animation: glass-sheen 12s ease-in-out infinite;
+	}
+}
+
+[data-style="glassmorphism"] .text-display {
+	font-size: clamp(2.75rem, 9vw, 6rem);
+	font-weight: 700;
+	line-height: 0.92;
+	letter-spacing: -0.06em;
+}
+
+[data-style="glassmorphism"] .text-page-title {
+	font-size: clamp(2rem, 5vw, 3.25rem);
+	font-weight: 700;
+	line-height: 1;
+	letter-spacing: -0.045em;
+}
+
+[data-style="glassmorphism"] .text-lead {
+	max-width: 48ch;
+	font-size: clamp(1.0625rem, 1.5vw + 0.5rem, 1.375rem);
+	line-height: 1.55;
+}
+
+[data-style="glassmorphism"] :is(.text-label, .text-meta) {
+	font-size: 0.625rem;
+	letter-spacing: 0.16em;
+}
+
+[data-style="glassmorphism"] .hero-step-4 .nb-button.nb-accent {
+	padding-inline: 1.35rem;
+}
+
+[data-style="glassmorphism"] .hero-step-4 .nb-button:not(.nb-accent) {
+	border-color: var(--glass-rim-soft);
+	box-shadow: inset 0 1px 0 var(--glass-rim-soft);
+}
+
+/* Section heads read as rail markers, with a light bead instead of a rule. */
+[data-style="glassmorphism"] .text-label.nb-line-b {
+	position: relative;
+	padding-left: 1rem;
+	border-top: 0;
+	border-bottom: 1px solid var(--glass-rim-soft);
+}
+
+[data-style="glassmorphism"] .text-label.nb-line-b::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 0.35rem;
+	width: 0.4rem;
+	height: 0.4rem;
+	border-radius: 999px;
+	background: var(--accent-surface);
+	box-shadow: 0 0 0 3px
+		color-mix(in srgb, var(--accent-surface) 18%, transparent);
+}
+
+[data-style="glassmorphism"] .nb-panel {
+	position: relative;
+	border-radius: var(--panel-radius);
+}
+
+[data-style="glassmorphism"] .nb-panel::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	padding: 1px;
+	border-radius: inherit;
+	background: linear-gradient(
+		145deg,
+		var(--glass-rim),
+		transparent 38%,
+		transparent 62%,
+		var(--glass-rim-soft)
+	);
+	-webkit-mask:
+		linear-gradient(#000 0 0) content-box,
+		linear-gradient(#000 0 0);
+	-webkit-mask-composite: xor;
+	mask:
+		linear-gradient(#000 0 0) content-box,
+		linear-gradient(#000 0 0);
+	mask-composite: exclude;
+	pointer-events: none;
+}
+
+[data-style="glassmorphism"] .nb-well {
+	border-radius: var(--well-radius);
+}
+
+[data-style="glassmorphism"] .nb-button {
+	min-height: 2.25rem;
+	padding: 0.55rem 1.05rem;
+	border-radius: 999px;
+	box-shadow:
+		var(--shadow-hard-sm),
+		inset 0 1px 0 var(--glass-rim);
+}
+
+[data-style="glassmorphism"] .nb-button.nb-accent {
+	box-shadow:
+		0 10px 24px -14px color-mix(in srgb, var(--accent-surface) 75%, transparent),
+		inset 0 1px 0 color-mix(in srgb, var(--on-accent) 40%, transparent);
+}
+
+[data-style="glassmorphism"] .nb-chip {
+	padding: 0.25rem 0.6rem;
+	border-radius: 999px;
+	box-shadow: inset 0 1px 0 var(--glass-rim-soft);
+}
+
+[data-style="glassmorphism"] .nb-chip:not(.nb-accent):hover {
+	border-color: var(--accent-surface);
+}
+
+[data-style="glassmorphism"] .nb-input,
+[data-style="glassmorphism"] .search-field {
+	padding: 0.7rem 0.9rem;
+}
+
+[data-style="glassmorphism"] .search-field {
+	min-height: 2.9rem;
+}
+
+[data-style="glassmorphism"] .nb-panel h2:not(.text-label) {
+	font-size: clamp(1.25rem, 2vw, 1.5rem);
+	line-height: 1.15;
+	letter-spacing: -0.035em;
+}
+
+[data-style="glassmorphism"] .nb-panel .nb-line-t {
+	border-top-color: var(--glass-rim-soft);
+}
+
+[data-style="glassmorphism"] .nb-lift:hover {
+	box-shadow:
+		var(--shadow-hard-lg),
+		0 0 0 1px var(--glass-rim-soft);
+}
+
+/* The writing index becomes a stack of recessed trays on the home page. */
+[data-style="glassmorphism"] li.nb-line-b {
+	margin-bottom: 0.5rem;
+	padding: 0.35rem 0.75rem;
+	border: 1px solid var(--glass-rim-soft);
+	border-radius: 18px;
+	background-color: var(--panel-surface);
+	box-shadow: var(--shadow-hard-sm);
+}
+
+[data-style="glassmorphism"] li.nb-line-b > a {
+	padding-block: 0.75rem;
+}
+
+/* A project tile carries a larger lens for its mark. */
+[data-style="glassmorphism"] .nb-spot .nb-line.nb-fill {
+	width: 3rem;
+	height: 3rem;
+	border-radius: 16px;
+	background-color: var(--well-surface);
+	box-shadow: inset 0 8px 16px -14px var(--glass-shade);
+}
+
+/* The first pane on contact and disclosure is primary; the second recedes. */
+[data-style="glassmorphism"] main > div > div > section.nb-panel:first-child {
+	box-shadow:
+		var(--shadow-hard-lg),
+		inset 0 1px 0 var(--glass-rim);
+}
+
+[data-style="glassmorphism"] main > div > div > section.nb-panel:nth-child(2) {
+	background-color: var(--well-surface);
+	box-shadow: var(--shadow-well);
+}
+
+[data-style="glassmorphism"]
+	section.nb-panel
+	ul
+	> li
+	> span[aria-hidden="true"] {
+	border-radius: 999px;
+	box-shadow: 0 0 0 3px
+		color-mix(in srgb, var(--accent-surface) 18%, transparent);
+}
+
+/* Long-form reading keeps one calm pane per section, with a lit counter. */
+[data-style="glassmorphism"] .prose-dbm h2 {
+	border-top-color: var(--glass-rim-soft);
+}
+
+[data-style="glassmorphism"] .prose-dbm h2::before {
+	padding: 0.3em 0.6em;
+	border-radius: 999px;
+	box-shadow:
+		0 8px 18px -12px color-mix(in srgb, var(--ink) 65%, transparent),
+		inset 0 1px 0 color-mix(in srgb, var(--on-accent) 40%, transparent);
+}
+
+[data-style="glassmorphism"]
+	:is(.prose-dbm .code-block, .prose-dbm .table-wrap, .prose-dbm blockquote) {
+	border-radius: 18px;
+}
+
+[data-style="glassmorphism"] .prose-dbm img {
+	border-radius: 14px;
+}
+
+/* Selection states on the theme page read as raised glass, with the outline
+   the picker already paints left in place. */
+[data-style="glassmorphism"] button[aria-pressed="true"].nb-panel {
+	box-shadow:
+		0 26px 56px -28px var(--glass-drop),
+		inset 0 1px 0 var(--glass-rim);
+}
+
+[data-style="glassmorphism"] span[aria-hidden="true"].nb-line.h-9 {
+	border-radius: 999px;
+}
+
+[data-style="glassmorphism"] footer.nb-line-t {
+	border-top-color: var(--glass-rim-soft);
+}
+
+/* The layer above paints the aurora, so the body must not paint it too. */
 [data-style="glassmorphism"] body {
 	background-image: none;
 }
-
 [data-style="xp"] {
 	/* Windows XP Luna. The chrome is fixed, the window bodies keep the
 	   palette so a dark scheme still reads as a dark XP desktop. */
@@ -2118,6 +2529,11 @@
 [data-style] .nb-chip,
 [data-style] .nb-input {
 	border-radius: var(--control-radius);
+}
+
+/* Glass separates fields from pills: a textarea is a pane, not a capsule. */
+[data-style="glassmorphism"] :is(.nb-input, .search-field) {
+	border-radius: 16px;
 }
 
 /* A rule color set in @theme is inlined, so it never sees a style's edge.
