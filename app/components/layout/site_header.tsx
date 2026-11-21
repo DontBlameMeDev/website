@@ -1,7 +1,9 @@
+import { motion, useReducedMotion } from "motion/react";
 import { NavLink } from "react-router";
 import { ThemeToggle } from "~/components/layout/theme_toggle";
 import { ScrollProgress } from "~/components/ui/scroll_progress";
 import { NAV, SITE } from "~/lib/site";
+import { useTheme } from "~/lib/theme_provider";
 import { cn } from "~/lib/utils";
 
 const linkClass = ({ isActive }: { isActive: boolean }) =>
@@ -12,7 +14,14 @@ const linkClass = ({ isActive }: { isActive: boolean }) =>
 			: "text-subtext0",
 	);
 
+const pillTransition = { duration: 0.28, ease: [0.16, 1, 0.3, 1] as const };
+
 export function SiteHeader() {
+	const { style } = useTheme();
+	const reduced = useReducedMotion();
+	const material = style === "material";
+	const transition = reduced ? { duration: 0 } : pillTransition;
+
 	return (
 		<header className="site-header sticky top-0 z-40 nb-page nb-chrome">
 			<div className="mx-auto flex max-w-[1240px] flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2 sm:h-16 sm:flex-nowrap sm:gap-10 sm:px-5 sm:py-0">
@@ -47,7 +56,20 @@ export function SiteHeader() {
 							prefetch="intent"
 							className={linkClass}
 						>
-							{item.label}
+							{({ isActive }) => (
+								<>
+									{isActive && material ? (
+										<motion.span
+											aria-hidden="true"
+											className="nav-pill"
+											layoutId="material-nav-pill"
+											initial={false}
+											transition={transition}
+										/>
+									) : null}
+									<span className="relative z-10">{item.label}</span>
+								</>
+							)}
 						</NavLink>
 					))}
 				</nav>

@@ -2779,6 +2779,29 @@
 	color: var(--text);
 }
 
+html[data-style="material"] .filter-chip {
+	position: relative;
+	isolation: isolate;
+}
+
+html[data-style="material"] .filter-chip[aria-pressed="true"] {
+	background-color: transparent;
+	color: var(--on-accent);
+}
+
+html[data-style="material"] .filter-chip[aria-pressed="true"]:hover {
+	background-color: transparent;
+	color: var(--on-accent);
+}
+
+html[data-style="material"] .filter-pill {
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	border-radius: 999px;
+	background-color: var(--accent-surface);
+}
+
 /* The app bar is one tonal plane, with the reading bar as its baseline. */
 html[data-style="material"] header.site-header {
 	background-color: var(--mat-bar);
@@ -2837,6 +2860,8 @@ html[data-style="material"] header.site-header > .relative .bg-accent {
 }
 
 [data-style="material"] nav[aria-label="Primary"] a {
+	position: relative;
+	isolation: isolate;
 	border-radius: 999px;
 	padding: 0.4rem 0.75rem;
 	font-size: 0.6875rem;
@@ -2860,9 +2885,18 @@ html[data-style="material"] header.site-header > .relative .bg-accent {
 }
 
 [data-style="material"] nav[aria-label="Primary"] a[aria-current="page"] {
+	background-color: transparent;
+	box-shadow: none;
+	color: var(--on-accent);
+}
+
+html[data-style="material"] .nav-pill {
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	border-radius: 999px;
 	background-color: var(--accent-surface);
 	box-shadow: var(--shadow-hard-sm);
-	color: var(--on-accent);
 }
 
 /* Four pills have to fit a 320px phone, so they tighten before they wrap. */
@@ -2985,6 +3019,12 @@ html[data-style="material"] .search-field.nb-input {
 	padding: 0.6rem 1rem;
 	background-color: var(--mat-track);
 	box-shadow: none;
+}
+
+html[data-style="material"] textarea.nb-input {
+	border-radius: var(--well-radius);
+	padding: 0.9rem 1rem;
+	line-height: 1.6;
 }
 
 html[data-style="material"] .search-field + div button {
