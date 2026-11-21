@@ -2088,8 +2088,9 @@
 	color: var(--xp-title-ink);
 }
 
-[data-style="xp"] :is(.prose-dbm ul > li::before, .prose-dbm ol > li::marker) {
-	color: var(--xp-border);
+[data-style="xp"] .prose-dbm ul > li::before,
+[data-style="xp"] .prose-dbm ol > li::marker {
+	color: var(--xp-link);
 }
 
 [data-style="xp"]
