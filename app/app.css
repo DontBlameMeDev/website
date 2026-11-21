@@ -922,21 +922,20 @@
 
 [data-style="futuristic"] {
 	--bw: 1px;
-	--bw-heavy: 3px;
+	--bw-heavy: 2px;
 	--radius: 0px;
-	--control-radius: 2px;
+	--control-radius: 0px;
 	--lift: 0px;
-	--press: 1px;
-	--fut-display:
-		"Pixelify Sans", "Montserrat", ui-sans-serif, system-ui, sans-serif;
+	--press: 0px;
+	--fut-display: "Montserrat", ui-sans-serif, system-ui, sans-serif;
 
-	/* One 4px Bayer checker, mixed from the accent in use. The header mark is a
-	   pre-dithered mask painted with that same variable, so a hue pick or a
-	   custom hex moves the mesh and the logo together without a runtime filter. */
-	--fut-dot: color-mix(in srgb, var(--accent-surface) 1%, transparent);
-	--fut-dot-deep: color-mix(in srgb, var(--accent-surface) 4%, transparent);
-	--fut-strip: color-mix(in srgb, var(--accent-surface) 55%, transparent);
-	--fut-frame: color-mix(in srgb, var(--accent-surface) 40%, var(--edge));
+	/* Dither belongs to chrome. Copy and data sit on the palette's own surface,
+	   so every scheme keeps the text pairs the contrast sweep measures. */
+	--fut-dot: color-mix(in srgb, var(--accent-surface) 1.5%, transparent);
+	--fut-line: color-mix(in srgb, var(--ink) 5%, transparent);
+	--fut-strip: color-mix(in srgb, var(--accent-surface) 42%, transparent);
+	--fut-frame: color-mix(in srgb, var(--accent-surface) 45%, var(--edge));
+	--fut-scan: color-mix(in srgb, var(--accent-surface) 12%, transparent);
 	--fut-mesh: conic-gradient(
 		from 90deg,
 		var(--fut-dot) 0 25%,
@@ -944,25 +943,23 @@
 		var(--fut-dot) 0 75%,
 		transparent 0
 	);
+	--fut-grid: linear-gradient(90deg, var(--fut-line) 1px, transparent 1px);
 	--fut-ticks: repeating-linear-gradient(
 		90deg,
-		var(--fut-dot-deep) 0 1px,
+		var(--fut-line) 0 1px,
 		transparent 1px 6px
 	);
 
-	/* Copy sits on the flat palette surface. The dither lives in chrome and
-	   panels, where it cannot move a measured text pair below AAA. */
 	--page-image: none;
 	--panel-image:
-		linear-gradient(180deg, var(--fut-strip), transparent), var(--fut-mesh);
-	--well-image: linear-gradient(transparent, transparent), var(--fut-mesh);
-	--plain-image: linear-gradient(transparent, transparent), var(--fut-mesh);
+		linear-gradient(180deg, var(--fut-strip), transparent), var(--fut-grid);
+	--well-image: linear-gradient(transparent, transparent), var(--fut-grid);
+	--plain-image: linear-gradient(transparent, transparent), var(--fut-grid);
 	--button-image:
-		linear-gradient(180deg, var(--fut-strip), transparent), var(--fut-mesh);
+		linear-gradient(180deg, var(--fut-strip), transparent), var(--fut-ticks);
 	--accent-image: none;
 
-	/* Frames are hairlines with one heavy cap, the way a panel is drawn in a
-	   schematic. Text still sits on the palette's own surfaces. */
+	/* Hairline frames carry one lit cap. The rest is alignment and space. */
 	--edge: color-mix(in srgb, var(--ink) 58%, var(--accent-surface));
 	--control-edge: var(--fut-frame);
 	--panel-edge: var(--bw) solid var(--fut-frame);
@@ -977,21 +974,19 @@
 	--accent-press-fill: var(--accent-surface);
 
 	--shadow-hard: 2px 2px 0
-		color-mix(in srgb, var(--accent-surface) 28%, transparent);
+		color-mix(in srgb, var(--accent-surface) 24%, transparent);
 	--shadow-hard-lg: 3px 3px 0
-		color-mix(in srgb, var(--accent-surface) 36%, transparent);
+		color-mix(in srgb, var(--accent-surface) 32%, transparent);
 	--shadow-hard-sm: 1px 1px 0
-		color-mix(in srgb, var(--accent-surface) 25%, transparent);
+		color-mix(in srgb, var(--accent-surface) 22%, transparent);
 	--shadow-well: inset 0 0 0 1px color-mix(in srgb, var(--ink) 18%, transparent);
 	--input-shadow: var(--shadow-well);
 	--button-hover-shadow: 2px 2px 0
-		color-mix(in srgb, var(--accent-surface) 42%, transparent);
+		color-mix(in srgb, var(--accent-surface) 38%, transparent);
 	--button-press-shadow: none;
 	--label-shadow: none;
 	--backdrop: none;
 
-	/* A slim solid rail. A moving striped thumb re-rasterizes on every scroll
-	   frame and shimmers, so the dither stays off the scrollbar. */
 	--scrollbar-size: 10px;
 	--scrollbar-radius: 0px;
 	--scrollbar-thumb: var(--accent-surface);
@@ -1000,8 +995,6 @@
 	--scrollbar-track: var(--page-surface);
 }
 
-/* Every painted image here is a wash plus a 4px tile, so the same sizing works on the
-   page, on a nested preview, and on a small control. */
 [data-style="futuristic"],
 [data-style="futuristic"]
 	:is(
@@ -1015,31 +1008,56 @@
 		.nb-input
 	) {
 	background-size:
-		100% 100%,
-		4px 4px;
+		100% 6px,
+		24px 24px;
 }
 
-/* The top wash is short on panels and controls: it reads as a lit edge, and
-   no glyph sits inside it. */
 [data-style="futuristic"].nb-panel,
 [data-style="futuristic"].nb-well,
 [data-style="futuristic"] .nb-panel,
 [data-style="futuristic"] .nb-well {
-	background-size:
-		100% 6px,
-		4px 4px;
 	background-repeat: no-repeat, repeat;
 }
 
 [data-style="futuristic"] .nb-button {
 	background-size:
 		100% 3px,
-		4px 4px;
+		12px 12px;
 	background-repeat: no-repeat, repeat;
 }
 
-/* The mark is dithered once in the asset and tinted here. It keeps the header's
-   original slot, so the wordmark beside it does not reflow. */
+/* The header is the instrument's top rail: dither, a calibrated edge, and a
+   row of major and minor ticks. */
+[data-style="futuristic"] header.nb-chrome {
+	background-color: var(--page-surface);
+	background-image: var(--fut-mesh);
+	background-size: 4px 4px;
+	box-shadow:
+		inset 0 -1px 0 var(--fut-frame),
+		inset 0 1px 0 var(--fut-line);
+}
+
+[data-style="futuristic"] header.nb-chrome::before {
+	content: "";
+	position: absolute;
+	inset: 0 0 auto;
+	height: 3px;
+	background: repeating-linear-gradient(
+		90deg,
+		var(--fut-frame) 0 1px,
+		transparent 1px 8px,
+		var(--fut-frame) 8px 9px,
+		transparent 9px 24px
+	);
+	opacity: 0.65;
+	pointer-events: none;
+}
+
+/* The mark keeps its original slot and gains a framed instrument socket. */
+[data-style="futuristic"] header.nb-chrome > div > a:first-child {
+	position: relative;
+}
+
 [data-style="futuristic"] header.nb-chrome > div > a:first-child::before {
 	content: "";
 	width: 1.5rem;
@@ -1061,58 +1079,99 @@
 	}
 }
 
-[data-style="futuristic"] header.nb-chrome {
-	box-shadow: inset 0 -1px 0 var(--fut-frame);
-}
-
 [data-style="futuristic"] header.nb-chrome nav a {
 	font-family: var(--font-mono);
 	font-size: 0.6875rem;
-	letter-spacing: 0.12em;
+	letter-spacing: 0.14em;
+	padding: 0.35rem 0.5rem;
+	transition: background-color var(--motion-hover) ease;
 }
 
 [data-style="futuristic"] header.nb-chrome nav a[aria-current="page"] {
+	color: var(--text);
+	box-shadow: inset 0 -2px 0 var(--accent-surface);
 	text-decoration-color: var(--accent-surface);
 }
 
 [data-style="futuristic"] .nav-link::after {
 	background: var(--accent-surface);
+	height: 1px;
+	left: 0.5rem;
+	right: 0.5rem;
+	bottom: 0.3rem;
 }
 
-/* The reading bar is a segmented data rail. */
+/* Reading progress is a segmented ruler with a bright leading mark. */
 [data-style="futuristic"] header.nb-chrome > .relative {
-	height: 3px;
-	background-image: var(--fut-ticks);
+	height: 4px;
+	background: var(--fut-ticks), var(--page-surface);
 }
 
 [data-style="futuristic"] header.nb-chrome > .relative .bg-accent {
 	/* The shared bar scales this element to reveal progress. A scaled background
-	   would stretch the dot pitch, so clip a full-width fixed pattern instead. */
+	   would stretch the tick pitch, so clip a full-width fixed pattern instead. */
 	transform: none !important;
 	clip-path: inset(0 calc((1 - var(--progress, 0)) * 100%) 0 0);
+	background-color: var(--accent-surface);
 	background-image: repeating-linear-gradient(
 		90deg,
-		transparent 0 5px,
-		color-mix(in srgb, var(--on-accent) 55%, var(--accent-surface)) 5px 6px
+		transparent 0 4px,
+		color-mix(in srgb, var(--on-accent) 45%, var(--accent-surface)) 4px 5px,
+		transparent 5px 10px
 	);
 }
 
-/* One large instance of the same pre-dithered mark sits in the empty half of a
-   masthead. It is a signature field, not a texture under copy. */
+/* A spectrum trace replaces the old dithered signature in the empty half of a
+   masthead. It is a readout, not a texture under copy. */
 [data-style="futuristic"] .page-window::before {
 	content: "";
 	position: absolute;
 	z-index: -1;
 	top: 2.5rem;
 	right: 2rem;
-	width: min(20rem, 36vw);
+	width: min(22rem, 36vw);
 	max-width: calc(100% - 4rem);
 	height: calc(100% - 2.5rem);
-	max-height: 20rem;
-	background-color: var(--accent-surface);
-	-webkit-mask: url("/images/logo-dither.svg") center / contain no-repeat;
-	mask: url("/images/logo-dither.svg") center / contain no-repeat;
-	opacity: 0.14;
+	max-height: 16rem;
+	background:
+		linear-gradient(
+			transparent calc(50% - 0.5px),
+			var(--fut-frame) 50%,
+			transparent calc(50% + 0.5px)
+		),
+		repeating-linear-gradient(
+			90deg,
+			transparent 0 11px,
+			color-mix(in srgb, var(--accent-surface) 22%, transparent) 11px 12px,
+			transparent 12px 22px
+		);
+	clip-path: polygon(
+		0 62%,
+		10% 62%,
+		10% 38%,
+		20% 38%,
+		20% 72%,
+		30% 72%,
+		30% 25%,
+		40% 25%,
+		40% 58%,
+		50% 58%,
+		50% 32%,
+		60% 32%,
+		60% 76%,
+		70% 76%,
+		70% 18%,
+		80% 18%,
+		80% 50%,
+		90% 50%,
+		90% 30%,
+		100% 30%,
+		100% 100%,
+		0 100%
+	);
+	-webkit-mask-image: linear-gradient(90deg, transparent, #000 18%);
+	mask-image: linear-gradient(90deg, transparent, #000 18%);
+	opacity: 0.55;
 	pointer-events: none;
 }
 
@@ -1122,19 +1181,50 @@
 	}
 }
 
-/* A post masthead is only one grid column wide, so the field would sit under
-   its lead paragraph there. */
 [data-style="futuristic"] article .page-window::before {
 	content: none;
 }
 
-/* A masthead is a framed readout. Its registration marks sit outside the frame so no glyph crosses them. */
+/* The masthead is a framed readout with a calibrated rule under its index. */
 [data-style="futuristic"] .page-window {
 	position: relative;
 	isolation: isolate;
 	box-shadow:
 		inset 0 0 0 1px color-mix(in srgb, var(--accent-surface) 16%, transparent),
 		var(--shadow-hard);
+}
+
+[data-style="futuristic"] .page-window > div:first-child {
+	position: relative;
+	padding-bottom: 0.85rem;
+	border-bottom: var(--bw) solid var(--fut-line);
+}
+
+[data-style="futuristic"] .page-window > div:first-child::after {
+	content: "";
+	position: absolute;
+	left: 0;
+	bottom: -1px;
+	width: 5rem;
+	height: 1px;
+	background: var(--accent-surface);
+}
+
+/* The window glyphs become unlabeled status LEDs on a masthead. */
+[data-style="futuristic"] .win-controls {
+	display: inline-flex;
+	align-items: center;
+	gap: 3px;
+}
+
+[data-style="futuristic"] .win-controls > span {
+	width: 5px;
+	height: 5px;
+	border: 1px solid var(--fut-frame);
+}
+
+[data-style="futuristic"] .win-controls > span:first-child {
+	background: var(--accent-surface);
 }
 
 [data-style="futuristic"] .page-window::after {
@@ -1162,35 +1252,218 @@
 	pointer-events: none;
 }
 
-[data-style="futuristic"] :is(.text-label, .text-meta, .nb-chip) {
+[data-style="futuristic"]
+	:is(.text-label, .text-meta, .nb-chip, time, .prose-dbm figcaption) {
 	font-family: var(--font-mono);
+	font-variant-numeric: tabular-nums lining-nums;
 }
 
 [data-style="futuristic"] :is(.text-label, .text-meta) {
 	letter-spacing: 0.16em;
 }
 
-[data-style="futuristic"] :is(h1, h2, h3, h4, h5) {
+[data-style="futuristic"]
+	:is(.text-display, .text-page-title, .prose-dbm :is(h2, h3)) {
+	font-family: var(--fut-display);
+	font-weight: 800;
 	letter-spacing: -0.045em;
+	line-height: 1.02;
 }
 
-/* The pixel face is a display cut: it carries the hero and page titles, and
-   the first two prose levels, where its grid reads as texture instead of noise.
-   Small labels stay on mono and body copy stays on Montserrat. */
+[data-style="futuristic"] .text-display {
+	font-size: clamp(2rem, 8vw, 5.5rem);
+	text-transform: uppercase;
+	letter-spacing: -0.055em;
+}
+
+[data-style="futuristic"] .text-lead {
+	padding-left: 1rem;
+	border-left: var(--bw-heavy) solid var(--fut-frame);
+}
+
+[data-style="futuristic"] .text-label.nb-line-b {
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+}
+
+[data-style="futuristic"] .text-label.nb-line-b::before {
+	content: "";
+	width: 6px;
+	height: 6px;
+	flex: none;
+	background: var(--accent-surface);
+	box-shadow: 0 0 0 1px var(--fut-frame);
+}
+
+/* Data cards are squared panels with corner brackets and one sweep on hover. */
 [data-style="futuristic"]
-:is(.text-display, .text-page-title, .prose-dbm :is(h2, h3)) {
-	font-family: var(--fut-display);
-	font-weight: 700;
-	letter-spacing: 0.01em;
-	line-height: 1.05;
+:not(
+	[data-style="futuristic"] [data-style]:not([data-style="futuristic"]) *
+).nb-panel {
+	position: relative;
+	isolation: isolate;
+}
+
+[data-style="futuristic"]
+	:not(
+		[data-style="futuristic"] [data-style]:not([data-style="futuristic"]) *
+	).nb-panel.nb-lift:not(.nb-spot) {
+	overflow: hidden;
+}
+
+[data-style="futuristic"]
+	:not(
+		[data-style="futuristic"] [data-style]:not([data-style="futuristic"]) *
+	).nb-panel::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background:
+		linear-gradient(var(--fut-frame), var(--fut-frame)) left top / 12px 1px
+		no-repeat,
+		linear-gradient(var(--fut-frame), var(--fut-frame)) left top / 1px 12px
+		no-repeat,
+		linear-gradient(var(--fut-frame), var(--fut-frame)) right top / 12px 1px
+		no-repeat,
+		linear-gradient(var(--fut-frame), var(--fut-frame)) right top / 1px 12px
+		no-repeat,
+		linear-gradient(var(--fut-frame), var(--fut-frame)) left bottom / 12px 1px
+		no-repeat,
+		linear-gradient(var(--fut-frame), var(--fut-frame)) left bottom / 1px 12px
+		no-repeat,
+		linear-gradient(var(--fut-frame), var(--fut-frame)) right bottom / 12px 1px
+		no-repeat,
+		linear-gradient(var(--fut-frame), var(--fut-frame)) right bottom / 1px 12px
+		no-repeat;
+	opacity: 0.85;
+	pointer-events: none;
+}
+
+[data-style="futuristic"]
+	:not(
+		[data-style="futuristic"] [data-style]:not([data-style="futuristic"]) *
+	).nb-panel.nb-lift:not(.nb-spot)::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background: linear-gradient(
+		100deg,
+		transparent 38%,
+		var(--fut-scan) 50%,
+		transparent 62%
+	);
+	transform: translateX(-110%);
+	transition: transform 520ms ease-out;
+	pointer-events: none;
+}
+
+[data-style="futuristic"]
+	:not(
+		[data-style="futuristic"] [data-style]:not([data-style="futuristic"]) *
+	).nb-spot::after {
+	display: block;
+	z-index: -1;
+	--spot-color: color-mix(in srgb, var(--accent-surface) 6%, transparent);
+}
+
+/* The sweep is a transform transition, so it needs no keyframes. */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+	[data-style="futuristic"]
+		:not(
+			[data-style="futuristic"] [data-style]:not([data-style="futuristic"]) *
+		).nb-panel.nb-lift:not(.nb-spot):is(:hover, :focus-visible)::after {
+		transform: translateX(110%);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	[data-style="futuristic"]
+		:not(
+			[data-style="futuristic"] [data-style]:not([data-style="futuristic"]) *
+		).nb-panel.nb-lift::after {
+		display: none;
+	}
+}
+
+/* Reading rows behave like selected channels on a console. */
+[data-style="futuristic"] li.nb-line-b > a.group {
+	position: relative;
+	margin-inline: -0.5rem;
+	padding-inline: 0.5rem;
+	transition:
+		background-color var(--motion-quick) ease,
+		box-shadow var(--motion-quick) ease;
+}
+
+[data-style="futuristic"] li.nb-line-b > a.group:hover,
+[data-style="futuristic"] li.nb-line-b > a.group:focus-visible {
+	background: color-mix(in srgb, var(--accent-surface) 5%, transparent);
+	box-shadow: inset 2px 0 var(--accent-surface);
 }
 
 [data-style="futuristic"] .nb-chip:not(.nb-accent):hover {
 	border-color: var(--accent-surface);
 }
 
+/* Prose heads carry a framed index; figures and code blocks are data panels. */
+[data-style="futuristic"] .prose-dbm h2::before {
+	display: inline-flex;
+	margin: 0 0.75em 0 0;
+	vertical-align: middle;
+	border: var(--bw) solid var(--fut-frame);
+	background: transparent;
+	color: var(--accent-surface);
+	padding: 0.18em 0.45em;
+}
+
+[data-style="futuristic"] .prose-dbm figure {
+	position: relative;
+}
+
+[data-style="futuristic"] .prose-dbm figure::before {
+	content: "";
+	position: absolute;
+	inset: -6px;
+	background:
+		linear-gradient(var(--fut-frame), var(--fut-frame)) left top / 14px 1px
+		no-repeat,
+		linear-gradient(var(--fut-frame), var(--fut-frame)) left top / 1px 14px
+		no-repeat,
+		linear-gradient(var(--fut-frame), var(--fut-frame)) right bottom / 14px 1px
+		no-repeat,
+		linear-gradient(var(--fut-frame), var(--fut-frame)) right bottom / 1px 14px
+		no-repeat;
+	pointer-events: none;
+}
+
+[data-style="futuristic"] .prose-dbm figcaption {
+	font-family: var(--font-mono);
+	letter-spacing: 0.08em;
+}
+
+[data-style="futuristic"] .prose-dbm .code-block__bar {
+	border-bottom-color: var(--fut-frame);
+	background:
+		linear-gradient(var(--fut-line), var(--fut-line)) left top / 100% 1px
+		no-repeat;
+}
+
 [data-style="futuristic"] footer.nb-line-t {
+	position: relative;
 	border-top-color: var(--fut-frame);
+}
+
+[data-style="futuristic"] footer.nb-line-t::before {
+	content: "";
+	position: absolute;
+	top: -1px;
+	left: 0;
+	width: 6rem;
+	height: 1px;
+	background: var(--accent-surface);
 }
 
 [data-style="flat"] {
