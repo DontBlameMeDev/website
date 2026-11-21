@@ -1,10 +1,16 @@
 import { ArrowDownWideNarrow, Clock, Search, X } from "lucide-react";
-import { AnimatePresence, MotionConfig, motion } from "motion/react";
+import {
+	AnimatePresence,
+	MotionConfig,
+	motion,
+	useReducedMotion,
+} from "motion/react";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router";
 import { PageHeader } from "~/components/layout/page_header";
 import { allTags, formatDate, posts } from "~/lib/posts";
 import { seo } from "~/lib/seo";
+import { useTheme } from "~/lib/theme_provider";
 import { cn } from "~/lib/utils";
 
 export const meta = () =>
@@ -14,8 +20,10 @@ export const meta = () =>
 			"Everything DontBlameMe has written down: privacy, Linux, NixOS, note taking, keyboards, and the psychology of the feed.",
 	});
 
-/** One tag filter chip. The selected class owns the fill, so toggling it twice
-   leaves no animation state behind. */
+const chipTransition = { duration: 0.24, ease: [0.16, 1, 0.3, 1] as const };
+
+/** One tag filter chip. The pressed state owns selection. Material moves a
+   shared pill behind the selected label. */
 function TagChip({
 	label,
 	selected,
@@ -25,6 +33,11 @@ function TagChip({
 	selected: boolean;
 	onClick: () => void;
 }) {
+	const { style } = useTheme();
+	const reduced = useReducedMotion();
+	const material = style === "material";
+	const transition = reduced ? { duration: 0 } : chipTransition;
+
 	return (
 		<button
 			type="button"
@@ -32,12 +45,22 @@ function TagChip({
 			aria-pressed={selected}
 			className={cn(
 				"nb-chip transition-colors",
+				material && "filter-chip",
 				selected
 					? "nb-accent"
 					: "text-subtext0 hover:bg-surface0 hover:text-text",
 			)}
 		>
-			{label}
+			{material && selected ? (
+				<motion.span
+					aria-hidden="true"
+					className="filter-pill"
+					layoutId="material-filter-pill"
+					initial={false}
+					transition={transition}
+				/>
+			) : null}
+			<span className="relative z-10">{label}</span>
 		</button>
 	);
 }
