@@ -1194,39 +1194,714 @@
 }
 
 [data-style="flat"] {
-	/* Shape only: the palette above is untouched, so any scheme works here. */
+	/* Shape only: the palette above is untouched, so any scheme works here.
+	   The 2px ink rule is the one accent of weight: everything else is a
+	   hairline, and nothing is raised. */
 	--bw: 1px;
 	--bw-heavy: 2px;
 	--radius: 6px;
+	--control-radius: var(--radius);
+	--panel-radius: var(--radius);
+	--well-radius: var(--radius);
 	--lift: 0px;
 	--press: 0px;
 	--shadow-hard: none;
 	--shadow-hard-lg: none;
 	--shadow-hard-sm: none;
-	--scrollbar-size: 10px;
-	--scrollbar-radius: 999px;
-	--scrollbar-thumb: var(--surface2);
-	--scrollbar-thumb-line: 3px solid transparent;
+	--scrollbar-size: 8px;
+	--scrollbar-radius: 0px;
+	--scrollbar-thumb: color-mix(in srgb, var(--ink) 70%, transparent);
+	--scrollbar-thumb-line: 2px solid transparent;
 
-	/* Nothing lifts, so an interaction has to tint instead: a hairline edge
-	   that firms up on hover, and fills that step down the surface ramp toward
-	   the well and the page. Mixing toward the ink instead would walk the fill
-	   into the text color, which no palette at the AAA floor can afford. */
-	--edge: color-mix(in srgb, var(--ink) 50%, transparent);
-	--hover-edge: color-mix(in srgb, var(--accent-surface) 55%, var(--edge));
-	--hover-fill: color-mix(in srgb, var(--mantle) 45%, var(--plain-surface));
-	--press-fill: var(--crust);
-	--card-hover-fill: color-mix(in srgb, var(--crust) 40%, var(--panel-surface));
-	--accent-hover-fill: color-mix(
+	--edge: color-mix(in srgb, var(--ink) 70%, transparent);
+	--panel-edge: 1px solid var(--edge);
+	--panel-top-edge: 2px solid var(--ink);
+	--well-edge: 1px solid var(--edge);
+	--button-edge: 1px solid var(--ink);
+	--hover-edge: var(--ink);
+	--button-weight: 700;
+
+	/* Interaction stays on the surface ramp. Mixing toward the ink would walk
+	   a hovered fill into the text color, which no AAA palette can afford. */
+	--hover-fill: color-mix(in srgb, var(--mantle) 40%, var(--base));
+	--press-fill: var(--mantle);
+	--card-hover-fill: color-mix(
 		in srgb,
-		var(--ink) 14%,
-		var(--accent-surface)
+		var(--mantle) 30%,
+		var(--panel-surface)
 	);
-	--accent-press-fill: color-mix(
-		in srgb,
-		var(--ink) 20%,
-		var(--accent-surface)
-	);
+	--accent-hover-fill: var(--accent-surface);
+	--accent-press-fill: var(--accent-surface);
+}
+
+/* Flat is a printed sheet: one reading column, a strong top rule, and space
+   where other styles put a panel. Every rule below names this style, so the
+   other eight catalog entries keep their own shape and motion. */
+[data-style="flat"] body {
+	letter-spacing: -0.005em;
+}
+
+[data-style="flat"] main {
+	max-width: 1180px;
+	padding: 3.5rem 1.5rem 7rem;
+}
+
+[data-style="flat"] .text-meta {
+	font-size: 0.6875rem;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+
+[data-style="flat"] .text-label.nb-line-b {
+	border-bottom: 2px solid var(--ink);
+	padding-bottom: 0.7rem;
+	letter-spacing: 0.2em;
+}
+
+[data-style="flat"] .text-label.nb-line-b::before {
+	content: "";
+	display: inline-block;
+	width: 1.4rem;
+	height: 2px;
+	margin-right: 0.6rem;
+	vertical-align: middle;
+	background: var(--accent-surface);
+}
+
+/* The masthead is a running head: a numbered eyebrow, one heavy rule, and a
+   title that owns the page instead of sitting inside a card. */
+[data-style="flat"] .page-window {
+	border-top: 2px solid var(--ink);
+	border-radius: 0;
+	padding-top: 2rem;
+	padding-bottom: 4rem;
+}
+
+[data-style="flat"] .page-window > div:first-child {
+	align-items: center;
+	border-bottom: 1px solid var(--edge);
+	border-radius: 0;
+	padding-bottom: 1rem;
+}
+
+[data-style="flat"] .page-window > div:first-child > .nb-chip {
+	border: 0;
+	background: transparent;
+	color: var(--accent-surface);
+	padding: 0;
+	font-family: var(--font-mono);
+	font-size: 0.6875rem;
+	letter-spacing: 0.18em;
+}
+
+[data-style="flat"] .page-window > div:first-child > .nb-chip::before {
+	content: "";
+	display: inline-block;
+	width: 0.4rem;
+	height: 0.4rem;
+	margin-right: 0.65rem;
+	vertical-align: 0.05em;
+	background: var(--accent-surface);
+}
+
+[data-style="flat"] .page-window h1 {
+	max-width: 24ch;
+	margin-top: 3rem;
+	line-height: 0.95;
+	letter-spacing: -0.03em;
+}
+
+[data-style="flat"] .text-display {
+	font-size: clamp(2rem, 8vw, 5.75rem);
+	font-weight: 800;
+	line-height: 0.92;
+	letter-spacing: -0.035em;
+}
+
+[data-style="flat"] .text-page-title {
+	font-size: clamp(2.25rem, 5.5vw, 4.25rem);
+	font-weight: 800;
+	line-height: 0.97;
+	letter-spacing: -0.05em;
+}
+
+[data-style="flat"] .text-lead {
+	max-width: 58ch;
+	font-size: clamp(1.0625rem, 1.4vw + 0.55rem, 1.375rem);
+	line-height: 1.5;
+}
+
+/* Navigation reads as a set of tabs cut into the same sheet as the page. */
+[data-style="flat"] header.site-header {
+	background-color: var(--page-surface);
+	background-image: none;
+}
+
+[data-style="flat"] header.nb-chrome > div:first-child {
+	max-width: 1180px;
+	min-height: 4rem;
+	gap: 0.75rem 1.5rem;
+	padding: 0.6rem 1.5rem;
+}
+
+[data-style="flat"] header.nb-chrome > div > a:first-child {
+	font-size: 0.8125rem;
+	font-weight: 800;
+	letter-spacing: -0.025em;
+}
+
+[data-style="flat"] header.nb-chrome > div > a:first-child img {
+	width: 1.5rem;
+	height: 1.5rem;
+	border: 0;
+}
+
+[data-style="flat"] header.nb-chrome nav {
+	gap: 1.5rem;
+}
+
+[data-style="flat"] header.nb-chrome .nav-link {
+	padding: 0.3rem 0 0.45rem;
+	font-size: 0.625rem;
+	letter-spacing: 0.16em;
+}
+
+[data-style="flat"] header.nb-chrome .nav-link[aria-current="page"] {
+	text-decoration: none;
+	font-weight: 800;
+}
+
+[data-style="flat"] header.nb-chrome .nav-link::after {
+	left: 0;
+	right: 0;
+	bottom: -1px;
+	height: 2px;
+}
+
+[data-style="flat"] header.nb-chrome > .relative {
+	height: 2px;
+}
+
+/* Controls are words with rules, not small boxes. */
+:where(html[data-style="flat"], [data-style="flat"])
+.nb-button:not(
+	:is(
+		body [data-style]:not([data-style="flat"]),
+		body [data-style]:not([data-style="flat"]) *
+	)
+) {
+	border-radius: var(--radius);
+	border: 1px solid var(--ink);
+	background-color: transparent;
+	background-image: none;
+	box-shadow: none;
+	padding: 0.7rem 1rem;
+	font-size: 0.6875rem;
+	font-weight: 800;
+	letter-spacing: 0.14em;
+	line-height: 1.2;
+	text-transform: uppercase;
+}
+
+:where(html[data-style="flat"], [data-style="flat"])
+	.nb-button:hover:not(
+		:is(
+			body [data-style]:not([data-style="flat"]),
+			body [data-style]:not([data-style="flat"]) *
+		)
+	) {
+	border-color: var(--ink);
+	background-color: var(--hover-fill);
+	box-shadow: none;
+	transform: none;
+}
+
+:where(html[data-style="flat"], [data-style="flat"])
+	.nb-button:active:not(
+		:is(
+			body [data-style]:not([data-style="flat"]),
+			body [data-style]:not([data-style="flat"]) *
+		)
+	) {
+	background-color: var(--press-fill);
+	box-shadow: none;
+	transform: none;
+}
+
+:where(html[data-style="flat"], [data-style="flat"])
+	.nb-accent.nb-accent:not(
+		:is(
+			body [data-style]:not([data-style="flat"]),
+			body [data-style]:not([data-style="flat"]) *
+		)
+	) {
+	border-color: var(--accent-surface);
+	background-color: var(--accent-surface) !important;
+	background-image: var(--accent-image) !important;
+	color: var(--on-accent) !important;
+	text-shadow: none;
+}
+
+:where(html[data-style="flat"], [data-style="flat"])
+	.nb-chip:not(
+		:is(
+			body [data-style]:not([data-style="flat"]),
+			body [data-style]:not([data-style="flat"]) *
+		)
+	) {
+	border: 0;
+	border-bottom: 1px solid var(--edge);
+	border-radius: 0;
+	background: transparent;
+	background-image: none;
+	padding: 0.25rem 0.1rem;
+	letter-spacing: 0.12em;
+}
+
+:where(html[data-style="flat"], [data-style="flat"])
+	.nb-chip:hover:not(
+		:is(
+			body [data-style]:not([data-style="flat"]),
+			body [data-style]:not([data-style="flat"]) *
+		)
+	) {
+	border-bottom-color: var(--ink);
+	background: transparent;
+}
+
+:where(html[data-style="flat"], [data-style="flat"])
+	a.nb-chip:hover:not(
+		:is(
+			body [data-style]:not([data-style="flat"]),
+			body [data-style]:not([data-style="flat"]) *
+		)
+	) {
+	border-bottom-color: var(--accent-surface);
+	background-color: var(--accent-surface) !important;
+	background-image: none !important;
+	color: var(--on-accent) !important;
+}
+
+:where(html[data-style="flat"], [data-style="flat"])
+	.nb-chip.nb-accent:not(
+		:is(
+			body [data-style]:not([data-style="flat"]),
+			body [data-style]:not([data-style="flat"]) *
+		)
+	) {
+	border-bottom-color: var(--accent-surface);
+	background-color: transparent !important;
+	background-image: none !important;
+	color: var(--accent-surface) !important;
+}
+
+:where(html[data-style="flat"], [data-style="flat"])
+	.page-window
+	> div:first-child
+	> .nb-chip.nb-accent:not(
+		:is(
+			body [data-style]:not([data-style="flat"]),
+			body [data-style]:not([data-style="flat"]) *
+		)
+	) {
+	border: 0;
+	background-color: transparent !important;
+	color: var(--accent-surface) !important;
+}
+
+:where(html[data-style="flat"], [data-style="flat"])
+	.nb-panel:not(
+		:is(
+			body [data-style]:not([data-style="flat"]),
+			body [data-style]:not([data-style="flat"]) *
+		)
+	),
+:where(html[data-style="flat"], [data-style="flat"])
+	.nb-well:not(
+		:is(
+			body [data-style]:not([data-style="flat"]),
+			body [data-style]:not([data-style="flat"]) *
+		)
+	) {
+	border-radius: var(--radius);
+	box-shadow: none;
+	backdrop-filter: none;
+}
+
+:where(html[data-style="flat"], [data-style="flat"])
+	.nb-panel:not(
+		:is(
+			body [data-style]:not([data-style="flat"]),
+			body [data-style]:not([data-style="flat"]) *
+		)
+	) {
+	background-image: none;
+}
+
+:where(html[data-style="flat"], [data-style="flat"])
+	.nb-panel:hover:not(
+		:is(
+			body [data-style]:not([data-style="flat"]),
+			body [data-style]:not([data-style="flat"]) *
+		)
+	),
+:where(html[data-style="flat"], [data-style="flat"])
+	.nb-lift:hover:not(
+		:is(
+			body [data-style]:not([data-style="flat"]),
+			body [data-style]:not([data-style="flat"]) *
+		)
+	) {
+	border-top-color: var(--accent-surface);
+	background-color: var(--card-hover-fill);
+	box-shadow: none;
+	transform: none;
+}
+
+/* Home: a writing index and a narrow projects column, both ruled instead of
+   boxed. */
+[data-style="flat"] main > div > div > div.mt-20.grid {
+	grid-template-columns: minmax(0, 1fr) 20rem;
+	column-gap: 4rem;
+	margin-top: 5rem;
+}
+
+[data-style="flat"] .nb-line-b > a.group {
+	align-items: end;
+	gap: 0.5rem 2rem;
+	padding: 1.35rem 0;
+}
+
+[data-style="flat"] .nb-line-b > a.group > span:first-child > span:first-child {
+	display: inline;
+	margin: 0;
+	padding: 0;
+	background: transparent;
+	color: var(--text);
+	font-size: 1.125rem;
+	font-weight: 700;
+	letter-spacing: -0.025em;
+	line-height: 1.25;
+	text-decoration: underline;
+	text-decoration-color: transparent;
+	text-decoration-thickness: 1px;
+	text-underline-offset: 0.25em;
+}
+
+[data-style="flat"]
+	.nb-line-b
+	> a.group:hover
+	> span:first-child
+	> span:first-child {
+	background: transparent;
+	color: var(--accent-surface);
+	text-decoration-color: var(--accent-surface);
+}
+
+/* Blog: filter tools are a single ruled line, and the cards become one index
+   with date, tags and reading time as marginalia. */
+[data-style="flat"] .search-field.nb-input {
+	border: 0;
+	border-bottom: 1px solid var(--ink);
+	border-radius: 0;
+	background: transparent;
+	box-shadow: none;
+	padding: 0.5rem 0;
+}
+
+[data-style="flat"] .search-field.nb-input:hover {
+	border-bottom-color: var(--accent-surface);
+}
+
+[data-style="flat"] button[title="Newest first"],
+[data-style="flat"] button[title="Oldest first"] {
+	border: 0;
+	border-radius: 0;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	white-space: nowrap;
+	border-bottom: 1px solid var(--edge);
+	background: transparent;
+	padding: 0.25rem 0;
+	font-size: 0.6875rem;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+}
+
+[data-style="flat"] main:has(.search-field) div.flex.flex-wrap.gap-2 {
+	gap: 0.75rem 1rem;
+}
+
+[data-style="flat"] footer ul.flex.flex-wrap.gap-2 {
+	gap: 0.75rem 1.5rem;
+}
+
+[data-style="flat"] .relative.mt-10.grid {
+	grid-template-columns: 1fr;
+	gap: 0;
+}
+
+[data-style="flat"] .relative.mt-10.grid > li > a.nb-panel {
+	display: grid;
+	grid-template-areas:
+		"head head"
+		"summary summary"
+		"meta meta";
+	grid-template-columns: minmax(0, 1fr) auto;
+	gap: 0;
+	border: 0;
+	border-top: 1px solid var(--edge);
+	background: transparent;
+	padding: 1.5rem 0;
+}
+
+[data-style="flat"] .relative.mt-10.grid > li > a.nb-panel > div:first-child {
+	grid-area: head;
+}
+
+[data-style="flat"] .relative.mt-10.grid > li > a.nb-panel h2 {
+	font-size: 1.375rem;
+	font-weight: 800;
+	letter-spacing: -0.035em;
+	line-height: 1.2;
+}
+
+[data-style="flat"] .relative.mt-10.grid > li > a.nb-panel p {
+	grid-area: summary;
+	margin-top: 0.55rem;
+	font-size: 0.875rem;
+}
+
+[data-style="flat"] .relative.mt-10.grid > li > a.nb-panel > div.nb-line-t {
+	grid-area: meta;
+	border-top: 0;
+	margin-top: 1rem;
+	padding-top: 0;
+}
+
+/* Projects: a catalogue of large, ruled entries. */
+[data-style="flat"] main:has(.nb-spot) > div > div > ul.grid {
+	grid-template-columns: 1fr;
+	gap: 0;
+	margin-top: 4rem;
+	border-top: 2px solid var(--ink);
+}
+
+[data-style="flat"] main:has(.nb-spot) li > a.nb-panel {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	border: 0;
+	border-bottom: 1px solid var(--edge);
+	background: transparent;
+	padding: 1.5rem 0;
+}
+
+[data-style="flat"] main:has(.nb-spot) li > a.nb-panel > p,
+[data-style="flat"] main:has(.nb-spot) li > a.nb-panel > span:last-child {
+	grid-column: 1 / -1;
+}
+[data-style="flat"] .nb-panel.nb-spot {
+	padding: 2rem;
+}
+
+[data-style="flat"] .nb-panel.nb-spot h2 {
+	font-size: 1.5rem;
+	font-weight: 800;
+	letter-spacing: -0.04em;
+	line-height: 1.1;
+}
+
+[data-style="flat"]
+	.nb-panel.nb-spot
+	> div:first-child
+	> div
+	> span:first-child {
+	border: 0;
+}
+
+/* Contact and disclosure: the panel is a form with a heavy heading rule. */
+[data-style="flat"] section.nb-panel {
+	padding: 2.5rem;
+}
+
+[data-style="flat"] section.nb-panel ul.flex-col {
+	gap: 0.85rem;
+}
+
+[data-style="flat"] section.nb-panel a.break-all {
+	font-size: clamp(1.125rem, 2.4vw, 1.75rem);
+	font-weight: 800;
+	letter-spacing: -0.04em;
+	text-decoration-color: var(--edge);
+	text-underline-offset: 0.25em;
+}
+
+/* Post reading view: a wider measure, numbered section rules, and a table of
+   contents that stays in the margin. */
+[data-style="flat"] article .grid > div:first-child {
+	max-width: 68ch;
+}
+
+[data-style="flat"] .prose-dbm {
+	max-width: 64ch;
+	font-size: 1.0625rem;
+	line-height: 1.85;
+}
+
+[data-style="flat"] .prose-dbm h2 {
+	margin-top: 3.5em;
+	padding-top: 1.2em;
+	border-top: 2px solid var(--ink);
+	font-size: clamp(1.5rem, 2.6vw, 2rem);
+	letter-spacing: -0.04em;
+}
+
+[data-style="flat"] .prose-dbm h2::before {
+	border: 0;
+	background: transparent;
+	box-shadow: none;
+	color: var(--accent-surface);
+	padding: 0;
+	letter-spacing: 0.18em;
+}
+
+[data-style="flat"] .prose-dbm h3 {
+	font-size: 1.25rem;
+	letter-spacing: -0.025em;
+}
+
+[data-style="flat"] .prose-dbm blockquote {
+	border: 0;
+	border-left: 2px solid var(--accent-surface);
+	padding: 0.15em 0 0.15em 1.25em;
+}
+
+[data-style="flat"] .prose-dbm .code-block {
+	box-shadow: none;
+}
+
+[data-style="flat"] .prose-dbm .code-block__bar {
+	border-bottom: 2px solid var(--ink);
+}
+
+[data-style="flat"] .prose-dbm figcaption {
+	font-size: 0.6875rem;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+}
+
+[data-style="flat"] aside .nb-panel {
+	background: transparent;
+	border: 0;
+	border-left: 1px solid var(--edge);
+	border-radius: 0;
+	padding-left: 1.5rem;
+}
+
+[data-style="flat"] nav[aria-label="On this page"] ul > li:not(:last-child) {
+	border-bottom-color: var(--edge);
+}
+
+[data-style="flat"] nav[aria-label="On this page"] a {
+	padding-block: 0.6rem;
+	font-size: 0.6875rem;
+	line-height: 1.5;
+}
+
+[data-style="flat"] aside .nb-panel > div.mt-6 {
+	margin-top: 2rem;
+}
+
+/* Theme previews are miniature sheets of this style, not little wells. */
+:where(html[data-style="flat"], [data-style="flat"])
+.nb-well[aria-hidden="true"]:not(
+	:is(
+		body [data-style]:not([data-style="flat"]),
+		body [data-style]:not([data-style="flat"]) *
+	)
+) {
+	background-color: var(--page-surface);
+}
+
+:where(html[data-style="flat"], [data-style="flat"])
+	.nb-well[aria-hidden="true"]
+	.nb-panel:not(
+		:is(
+			body [data-style]:not([data-style="flat"]),
+			body [data-style]:not([data-style="flat"]) *
+		)
+	) {
+	background-color: var(--panel-surface);
+	padding: 0.5rem;
+}
+[data-style="flat"] .chip-in {
+	animation: none;
+}
+
+/* The footer is a colophon: the same heavy rule, with links set as running
+   text rather than a row of pills. */
+[data-style="flat"] footer.nb-line-t {
+	margin-top: 7rem;
+	border-top: 2px solid var(--ink);
+}
+
+[data-style="flat"] footer > div {
+	max-width: 1180px;
+	padding: 3rem 1.5rem 4rem;
+}
+
+/* Flat's motion is the tab line and the title underline. Nothing arrives. */
+[data-style="flat"] main > div,
+[data-style="flat"] .hero-step {
+	animation: none;
+}
+
+@media (min-width: 40rem) {
+	[data-style="flat"] main {
+		padding: 4.5rem 3rem 8rem;
+	}
+
+	[data-style="flat"] header.nb-chrome > div:first-child {
+		min-height: 5rem;
+		flex-wrap: nowrap;
+		padding: 0 3rem;
+	}
+
+	[data-style="flat"] header.nb-chrome > div > a:first-child img {
+		width: 1.75rem;
+		height: 1.75rem;
+	}
+
+	[data-style="flat"] header.nb-chrome nav {
+		gap: 2rem;
+	}
+
+	[data-style="flat"] header.nb-chrome .nav-link {
+		font-size: 0.6875rem;
+	}
+
+	[data-style="flat"] footer > div {
+		padding-inline: 3rem;
+	}
+}
+
+@media (max-width: 47.99rem) {
+	[data-style="flat"] main > div > div > div.mt-20.grid {
+		grid-template-columns: 1fr;
+		row-gap: 3rem;
+	}
+
+	[data-style="flat"] main > div > div > div.mt-20.grid > div {
+		order: 2;
+	}
+}
+
+@media (max-width: 63.99rem) {
+	[data-style="flat"] .relative.mt-10.grid > li > a.nb-panel h2 {
+		font-size: 1.125rem;
+	}
 }
 
 [data-style="glassmorphism"] {
@@ -3737,11 +4412,6 @@
 .nb-spot > * {
 	position: relative;
 	z-index: 1;
-}
-
-[data-style="flat"] .nb-spot::after {
-	display: block;
-	--spot-color: color-mix(in srgb, var(--crust) 35%, transparent);
 }
 
 [data-style="glassmorphism"] .nb-spot::after {
