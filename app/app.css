@@ -1193,6 +1193,326 @@
 	border-top-color: var(--fut-frame);
 }
 
+/* Neobrutalist: a printed sheet. Heavy rules, hard ink offsets and stamp
+   controls carry the style; every color still comes from the active scheme. */
+[data-style="neobrutalist"] {
+	--bw: 3px;
+	--bw-heavy: 14px;
+	--lift: -3px;
+	--press: 3px;
+	--radius: 0px;
+	--control-radius: 0px;
+	--edge: var(--ink);
+	--control-edge: var(--ink);
+	--panel-edge: var(--bw) solid var(--edge);
+	--panel-top-edge: var(--bw-heavy) solid var(--edge);
+	--well-edge: var(--bw) solid var(--edge);
+	--button-edge: var(--bw) solid var(--edge);
+	--button-weight: 800;
+	--shadow-hard: 7px 7px 0 var(--ink);
+	--shadow-hard-lg: 11px 11px 0 var(--ink);
+	--shadow-hard-sm: 4px 4px 0 var(--ink);
+	--shadow-well: inset 4px 4px 0 color-mix(in srgb, var(--ink) 30%, transparent);
+	--input-shadow: var(--shadow-well);
+	--button-hover-shadow: 5px 5px 0 var(--ink);
+	--button-press-shadow: 1px 1px 0 var(--ink);
+	--hover-edge: var(--ink);
+	--hover-fill: var(--plain-surface);
+	--press-fill: var(--plain-surface);
+	--card-hover-fill: var(--panel-surface);
+	--accent-hover-fill: var(--accent-surface);
+	--accent-press-fill: var(--accent-surface);
+	--label-shadow: none;
+	--scrollbar-size: 18px;
+	--scrollbar-radius: 0px;
+	--scrollbar-thumb: var(--ink);
+	--scrollbar-thumb-line: 3px solid var(--page-surface);
+	--scrollbar-thumb-shadow: none;
+	--scrollbar-track: var(--page-surface);
+	--scrollbar-track-shadow: none;
+}
+
+html[data-style="neobrutalist"] main {
+	padding-top: clamp(2rem, 4vw, 3.5rem);
+}
+
+html[data-style="neobrutalist"] :is(.text-display, .text-page-title) {
+	font-weight: 900;
+	line-height: 0.86;
+	letter-spacing: -0.07em;
+}
+
+html[data-style="neobrutalist"] .text-display {
+	font-size: clamp(2.25rem, 9vw, 6rem);
+}
+
+html[data-style="neobrutalist"] .text-page-title {
+	font-size: clamp(2rem, 5vw, 3.75rem);
+}
+
+html[data-style="neobrutalist"] .text-label {
+	font-weight: 900;
+	letter-spacing: 0.18em;
+}
+
+html[data-style="neobrutalist"] .text-lead {
+	padding-left: 1rem;
+	border-left: var(--bw-heavy) solid var(--accent-surface);
+	font-weight: 600;
+}
+
+/* The masthead and footer are inverted print blocks. */
+html[data-style="neobrutalist"] header.site-header,
+html[data-style="neobrutalist"] footer.nb-line-t {
+	background-color: var(--ink);
+	background-image: none;
+	color: var(--page-surface);
+}
+
+html[data-style="neobrutalist"] header.site-header {
+	box-shadow: 0 5px 0 var(--accent-surface);
+}
+
+html[data-style="neobrutalist"] header.site-header :is(a, button),
+html[data-style="neobrutalist"] footer :is(a, button, p, span) {
+	color: var(--page-surface);
+}
+
+html[data-style="neobrutalist"] header.site-header > div > a:first-child {
+	font-weight: 900;
+	letter-spacing: -0.05em;
+}
+
+html[data-style="neobrutalist"] header.site-header img {
+	padding: 0;
+	border: 2px solid var(--page-surface);
+	box-shadow: 3px 3px 0 var(--accent-surface);
+}
+
+html[data-style="neobrutalist"] header.site-header nav a {
+	padding: 0.35rem 0.55rem;
+	border: 2px solid var(--page-surface);
+	font-size: 0.6875rem;
+	font-weight: 900;
+	letter-spacing: 0.1em;
+	text-decoration: none;
+	text-transform: uppercase;
+	transition:
+		transform var(--motion-quick) ease,
+		box-shadow var(--motion-quick) ease,
+		background-color var(--motion-quick) ease,
+		color var(--motion-quick) ease;
+}
+
+html[data-style="neobrutalist"] .nav-link::after {
+	content: none;
+}
+
+html[data-style="neobrutalist"] header.site-header nav a:hover {
+	transform: translate(-2px, -2px);
+	border-color: var(--accent-surface);
+	background-color: var(--accent-surface);
+	box-shadow: 3px 3px 0 var(--page-surface);
+	color: var(--on-accent);
+}
+
+html[data-style="neobrutalist"] header.site-header nav a[aria-current="page"] {
+	transform: translate(2px, 2px);
+	background-color: var(--page-surface);
+	box-shadow: none;
+	color: var(--ink);
+}
+
+html[data-style="neobrutalist"] header.site-header .nb-button {
+	border-color: var(--page-surface);
+	background-color: var(--page-surface);
+	background-image: none;
+	box-shadow: 3px 3px 0 var(--accent-surface);
+	color: var(--ink);
+}
+
+html[data-style="neobrutalist"] header.site-header > .relative {
+	background-color: var(--page-surface);
+}
+
+@media (max-width: 39.99rem) {
+	html[data-style="neobrutalist"] header.site-header nav a {
+		padding: 0.3rem 0.35rem;
+		font-size: 0.625rem;
+		letter-spacing: 0.04em;
+	}
+}
+
+html[data-style="neobrutalist"] .page-window {
+	position: relative;
+	padding-inline: clamp(0.875rem, 2.5vw, 1.5rem);
+	box-shadow: var(--shadow-hard-lg);
+}
+
+html[data-style="neobrutalist"] .page-window > div:first-child {
+	padding-bottom: 0.75rem;
+	border-bottom: var(--bw) solid var(--edge);
+}
+
+html[data-style="neobrutalist"] .page-window > div:first-child > .nb-chip {
+	box-shadow: 4px 4px 0 var(--ink);
+}
+
+html[data-style="neobrutalist"] .page-window h1 {
+	text-transform: uppercase;
+}
+
+html[data-style="neobrutalist"] article .page-window h1 {
+	text-transform: none;
+}
+
+html[data-style="neobrutalist"] .page-window .win-controls {
+	display: inline-flex;
+	gap: 4px;
+}
+
+html[data-style="neobrutalist"] .page-window .win-controls > span {
+	width: 0.6rem;
+	height: 0.6rem;
+	border: 2px solid var(--edge);
+	box-shadow: 2px 2px 0 var(--ink);
+}
+html[data-style="neobrutalist"] main :is(a, button, section).nb-panel {
+	position: relative;
+	box-shadow: var(--shadow-hard-lg);
+}
+
+html[data-style="neobrutalist"] main :is(a, button, section).nb-panel::before {
+	content: "";
+	position: absolute;
+	top: calc(-1 * var(--bw));
+	left: 0;
+	width: 4rem;
+	height: var(--bw-heavy);
+	border: var(--bw) solid var(--edge);
+	border-top: 0;
+	background: var(--accent-surface);
+	pointer-events: none;
+}
+
+html[data-style="neobrutalist"] main .nb-panel h2 {
+	font-weight: 900;
+	letter-spacing: -0.045em;
+}
+
+html[data-style="neobrutalist"] main a.nb-panel h2 {
+	text-transform: uppercase;
+}
+
+html[data-style="neobrutalist"] main a.nb-panel:focus-visible h2 {
+	text-decoration: underline;
+	text-decoration-thickness: 3px;
+	text-underline-offset: 4px;
+}
+
+html[data-style="neobrutalist"] section.nb-panel ul > li > span[aria-hidden] {
+	width: 0.625rem;
+	height: 0.625rem;
+	border: 2px solid var(--edge);
+	box-shadow: 2px 2px 0 var(--ink);
+}
+
+html[data-style="neobrutalist"]
+	nav[aria-label="On this page"]
+	a[aria-current="true"] {
+	font-weight: 900;
+}
+html[data-style="neobrutalist"] footer.nb-line-t {
+	margin-top: 7rem;
+	border-top: var(--bw-heavy) solid var(--accent-surface);
+}
+
+html[data-style="neobrutalist"] footer .nb-chip {
+	border-color: var(--page-surface);
+	background-color: transparent;
+	background-image: none;
+	box-shadow: 3px 3px 0 var(--accent-surface);
+}
+
+html[data-style="neobrutalist"] footer .nb-chip:hover {
+	transform: translate(-2px, -2px);
+	border-color: var(--accent-surface);
+	background-color: var(--accent-surface);
+	box-shadow: 5px 5px 0 var(--accent-surface);
+	color: var(--on-accent);
+}
+
+html[data-style="neobrutalist"] :focus-visible {
+	outline: 4px solid var(--focus-ring);
+	outline-offset: 3px;
+}
+
+html[data-style="neobrutalist"] .search-field:has(input:focus-visible) {
+	outline-width: 4px;
+}
+
+html[data-style="neobrutalist"] :is(header.site-header, footer) :focus-visible {
+	outline-color: var(--page-surface);
+}
+
+html[data-style="neobrutalist"] .prose-dbm h2 {
+	border-top-width: var(--bw-heavy);
+}
+
+html[data-style="neobrutalist"] .prose-dbm h2::before {
+	border-width: var(--bw);
+	box-shadow: var(--shadow-hard-sm);
+}
+
+html[data-style="neobrutalist"] .prose-dbm figcaption {
+	padding-left: 0.7rem;
+	border-left: var(--bw-heavy) solid var(--accent-surface);
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+}
+
+html[data-style="neobrutalist"] .prose-dbm .code-block {
+	box-shadow: var(--shadow-hard);
+}
+
+html[data-style="neobrutalist"] .prose-dbm .code-block__bar {
+	border-bottom-width: var(--bw);
+	font-weight: 900;
+}
+
+html[data-style="neobrutalist"] .prose-dbm .code-block__copy {
+	border-width: 2px;
+	box-shadow: var(--shadow-hard-sm);
+	font-weight: 800;
+}
+
+html[data-style="neobrutalist"] .prose-dbm .code-block__copy:hover {
+	transform: translate(-2px, -2px);
+	box-shadow: 5px 5px 0 var(--ink);
+	color: var(--text);
+}
+
+html[data-style="neobrutalist"] nav[aria-label="On this page"] .bg-accent {
+	width: 4px;
+	box-shadow: 2px 0 0 var(--ink);
+}
+
+@keyframes nb-print-in {
+	from {
+		opacity: 0;
+		transform: translateY(6px) scale(0.985);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+html[data-style="neobrutalist"] .hero-step {
+	animation: nb-print-in var(--motion-base) steps(3, end) both;
+}
+
 [data-style="flat"] {
 	/* Shape only: the palette above is untouched, so any scheme works here. */
 	--bw: 1px;
